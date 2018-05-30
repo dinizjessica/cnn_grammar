@@ -15,5 +15,5 @@ class regression(supervised_learning):
         # Set error metric if it's not set already.
         if params['ERROR_METRIC'] is None:
             params['ERROR_METRIC'] = rmse
-
+        
         self.maximise = params['ERROR_METRIC'].maximise

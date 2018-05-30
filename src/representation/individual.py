@@ -3,6 +3,8 @@ import numpy as np
 from algorithm.mapper import mapper
 from algorithm.parameters import params
 
+# from neuralNetworkCifar import runNeuralNetworkCifar
+from neuralNetwork_any_dataset import runNeuralNetwork
 
 class Individual(object):
     """
@@ -58,7 +60,7 @@ class Individual(object):
                 if np.isnan(other.fitness):
                     return False
                 else:
-                    return self.fitness < other.fitness
+                    return self.fitness > other.fitness
         else:
             if np.isnan(self.fitness):
                 # Self.fitness is not a number, return False as it doesn't
@@ -68,7 +70,7 @@ class Individual(object):
                 if np.isnan(other.fitness):
                     return False
                 else:
-                    return other.fitness < self.fitness
+                    return other.fitness > self.fitness
 
     def __le__(self, other):
         """
@@ -93,7 +95,7 @@ class Individual(object):
                 if np.isnan(other.fitness):
                     return False
                 else:
-                    return self.fitness <= other.fitness
+                    return self.fitness >= other.fitness
         else:
             if np.isnan(self.fitness):
                 # Self.fitness is not a number, return False as it doesn't
@@ -103,7 +105,7 @@ class Individual(object):
                 if np.isnan(other.fitness):
                     return False
                 else:
-                    return other.fitness <= self.fitness
+                    return other.fitness >= self.fitness
 
     def __str__(self):
         """
@@ -153,7 +155,10 @@ class Individual(object):
         """
 
         # Evaluate fitness using specified fitness function.
-        self.fitness = params['FITNESS_FUNCTION'](self)
+        # import pdb; pdb.set_trace()
+        self.fitness = runNeuralNetwork(self.phenotype)
+        # self.fitness = runNeuralNetwork(self.phenotype)#params['FITNESS_FUNCTION'](self)
+        # import pdb; pdb.set_trace()
 
         if params['MULTICORE']:
             return self

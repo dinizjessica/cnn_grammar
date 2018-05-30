@@ -1,0 +1,9 @@
+<EXP_FINAL>		::=  <EXP_2><FC>
+<EXP_2>			::=  (<EXP_1>*<M>)
+<EXP_1>			::=  (<CONV><POOL>)
+<FC>			::=  fc*<K>
+<POOL>			::=  pool|vazio
+<CONV>			::=  (conv*<N>)
+<N>				::=  1
+<K>				::=  0|1|2
+<M>				::=  1|2|3|4|5|6

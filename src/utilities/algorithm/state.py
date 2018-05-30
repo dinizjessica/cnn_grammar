@@ -13,7 +13,6 @@ def create_state(individuals):
     :param individuals: A population of individuals to be saved.
     :return: The complete state of a run.
     """
-    
     from algorithm.parameters import params
     from stats.stats import stats
     from utilities.stats import trackers

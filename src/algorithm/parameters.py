@@ -320,7 +320,7 @@ def set_params(command_line_args, create_files=True):
 
         # Ensure correct operators are used if multiple fitness functions used.
         if hasattr(params['FITNESS_FUNCTION'], 'multi_objective'):
-
+            
             # Check that multi-objective compatible selection is specified.
             if not hasattr(params['SELECTION'], "multi_objective"):
                 s = "algorithm.parameters.set_params\n" \

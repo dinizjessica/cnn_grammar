@@ -112,6 +112,13 @@ def parse_cmd_args(arguments):
                 value = "\t"
             setattr(namespace, self.dest, value)
 
+    # # LOAD INDIVIDUALS FILE
+    # parser.add_argument('--individuals_file_path',
+    #                     dest='INDIVIDUALS_FILE_PATH',
+    #                     type=str,
+    #                     help='Specifies the file path to be used. Must '
+    #                          'include the full file extension.')
+
     # LOAD PARAMETERS FILE
     parser.add_argument('--parameters',
                         dest='PARAMETERS',

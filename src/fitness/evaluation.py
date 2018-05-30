@@ -34,7 +34,7 @@ def evaluate_fitness(individuals):
 
     for name, ind in enumerate(individuals):
         ind.name = name
-
+        # import pdb; pdb.set_trace()
         # Iterate over all individuals in the population.
         if ind.invalid:
             # Invalid individuals cannot be evaluated and are given a bad
@@ -74,6 +74,7 @@ def evaluate_fitness(individuals):
 
             if eval_ind:
                 results = eval_or_append(ind, results, pool)
+                # import pdb; pdb.set_trace()
 
     if params['MULTICORE']:
         for result in results:
@@ -114,6 +115,7 @@ def eval_or_append(ind, results, pool):
         return results
     
     else:
+        # import pdb; pdb.set_trace()
         # Evaluate the individual.
         ind.evaluate()
 

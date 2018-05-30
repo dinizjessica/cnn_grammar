@@ -42,7 +42,8 @@ def sort_non_dominated(population):
 
     # Initialise empty pareto class instance.
     pareto = ParetoInfo()
-
+    print("hhhhhhhh")
+    print(population)
     # Compute the Inter-Quartile Range (+1) value used to normalize the
     # crowding distance
     pareto.compute_iqr(population)

@@ -216,6 +216,7 @@ def get_fit_func_imports():
             attr = split_name[-1]
 
             # Import this fitness function.
+            # import pdb; pdb.set_trace()
             params[op][i] = return_attr_from_module(module_path, attr)
 
         # Import base multi-objective fitness function class.
@@ -238,6 +239,7 @@ def get_fit_func_imports():
         module_name = ".".join(["fitness", params[op]])
 
         # Import module and attribute and save.
+        # import pdb; pdb.set_trace()
         params[op] = return_attr_from_module(module_name, attr_name)
 
         # Initialise fitness function.
@@ -257,6 +259,7 @@ def return_attr_from_module(module_name, attr_name):
 
     try:
         # Import module.
+        if module_name == 'fitness.regression': module_name = 'fitness.supervised_learning.regression'
         module = importlib.import_module(module_name)
 
     except ModuleNotFoundError:

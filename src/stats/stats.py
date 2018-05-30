@@ -12,6 +12,7 @@ from utilities.stats.save_plots import save_plot_from_data, \
 from utilities.stats.file_io import save_stats_to_file, save_stats_headers, \
     save_best_ind_to_file, save_first_front_to_file
 
+from writeFileHelper import writeLog
 
 """Algorithm statistics"""
 stats = {
@@ -372,7 +373,9 @@ def print_final_stats():
         print("\n\nBest:\n  Fitness:\t", trackers.best_ever.fitness)
 
     print("  Phenotype:", trackers.best_ever.phenotype)
+    writeLog(" Best Phenotype: " + trackers.best_ever.phenotype)
     print("  Genome:", trackers.best_ever.genome)
+    writeLog(" Best Genome: " + str(trackers.best_ever.genome))
     print_generation_stats()
 
 

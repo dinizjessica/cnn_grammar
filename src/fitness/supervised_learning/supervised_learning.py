@@ -8,6 +8,8 @@ from utilities.fitness.optimize_constants import optimize_constants
 
 from fitness.base_ff_classes.base_ff import base_ff
 
+# from redeNeural import runNeuralNetwork
+from neuralNetworkCifar import runNeuralNetworkCifar
 
 class supervised_learning(base_ff):
     """
@@ -87,11 +89,20 @@ class supervised_learning(base_ff):
 
                 # let's always call the error function with the
                 # true values first, the estimate second
+
                 return params['ERROR_METRIC'](y, yhat)
 
         else:
             # phenotype won't refer to C
-            yhat = eval(ind.phenotype)
+            from scipy.special import expit
+#             import pdb
+#             pdb.set_trace()
+            # yhat = eval(ind.phenotype, {'sig':expit, 'x':x})
+            
+            # yhat = runNeuralNetwork(ind.phenotype)
+            yhat = runNeuralNetworkCifar(ind.phenotype)
+            
+            # import pdb; pdb.set_trace()
             assert np.isrealobj(yhat)
 
             # let's always call the error function with the true
