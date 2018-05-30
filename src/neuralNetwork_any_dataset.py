@@ -179,9 +179,9 @@ def runBests(bests, addDropout, addBatchNormalization):
 # Testes com dropout e batch normalization
 ############################################
 # bests = ['(((conv*2)pool)*3)fc*2', '(((conv*2)pool)*3)fc*1', '(((conv*2)pool)*3)fc*0']
-bests = ['(((conv*1)pool)*1)fc*1']
+# bests = ['(((conv*1)pool)*1)fc*1']
 
-runBests(bests, True, True)
+# runBests(bests, True, True)
 
 
 

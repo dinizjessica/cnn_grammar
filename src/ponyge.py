@@ -15,6 +15,8 @@ from stats.stats import get_stats
 from algorithm.parameters import params, set_params
 import sys
 
+from writeFileHelper import writeLog
+
 
 def mane():
     """ Run program """
@@ -27,5 +29,6 @@ def mane():
 
 
 if __name__ == "__main__":
+    writeLog('Starting Process....')
     set_params(sys.argv[1:])  # exclude the ponyge.py arg itself
     mane()

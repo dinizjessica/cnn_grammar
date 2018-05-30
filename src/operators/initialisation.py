@@ -297,7 +297,7 @@ def generate_ind_tree(max_depth, method):
 
     # Initialise individual
     ind = individual.Individual(genome, ind_tree, map_ind=False)
-    import pdb; pdb.set_trace()
+    # import pdb; pdb.set_trace()
 
     # Set individual parameters
     ind.phenotype, ind.nodes = phenotype, nodes
@@ -332,11 +332,11 @@ def generate_PI_ind_tree(max_depth):
         # Grammar contains python code
 
         phenotype = python_filter(phenotype)
-        import pdb; pdb.set_trace()
+        # import pdb; pdb.set_trace()
 
     # Initialise individual
     ind = individual.Individual(genome, ind_tree, map_ind=False)
-    import pdb; pdb.set_trace()
+    # import pdb; pdb.set_trace()
 
     # Set individual parameters
     ind.phenotype, ind.nodes = phenotype, nodes

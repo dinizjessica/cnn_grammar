@@ -8,8 +8,8 @@ from utilities.fitness.optimize_constants import optimize_constants
 
 from fitness.base_ff_classes.base_ff import base_ff
 
-# from redeNeural import runNeuralNetwork
-from neuralNetworkCifar import runNeuralNetworkCifar
+# from neuralNetworkCifar import runNeuralNetworkCifar
+from neuralNetwork_any_dataset import runNeuralNetwork
 
 class supervised_learning(base_ff):
     """
@@ -99,8 +99,8 @@ class supervised_learning(base_ff):
 #             pdb.set_trace()
             # yhat = eval(ind.phenotype, {'sig':expit, 'x':x})
             
-            # yhat = runNeuralNetwork(ind.phenotype)
-            yhat = runNeuralNetworkCifar(ind.phenotype)
+            yhat = runNeuralNetwork(ind.phenotype)
+            # yhat = runNeuralNetworkCifar(ind.phenotype)
             
             # import pdb; pdb.set_trace()
             assert np.isrealobj(yhat)
