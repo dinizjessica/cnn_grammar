@@ -75,7 +75,7 @@ def getBestModel(model, train_generator, validation_generator):
                   metrics=['accuracy'])
     best_weights_filepath = 'best_weights.hdf5'
     earlyStopping = EarlyStopping(monitor='val_loss', patience=20, verbose=1, mode='auto')
-    saveBestModel = ModelCheckpoint(best_weights_filepath, monitor='val_acc', verbose=1, save_best_only=True, mode='auto')
+    # saveBestModel = ModelCheckpoint(best_weights_filepath, monitor='val_acc', verbose=1, save_best_only=True, mode='auto')
 
     # train model
     history = model.fit_generator(train_generator,
@@ -83,7 +83,8 @@ def getBestModel(model, train_generator, validation_generator):
                                   epochs=epochs,
                                   validation_data=validation_generator,
                                   validation_steps=nb_validation_samples // batch_size,
-                                  callbacks=[earlyStopping, saveBestModel])
+                                  callbacks=[earlyStopping]#, saveBestModel]
+                                  )
 
     # history = model.fit(x_tr, y_trbatch_size=batch_size, nb_epoch=n_epochs,
     #           verbose=1, validation_data=(x_va, y_va), callbacks=[earlyStopping, saveBestModel])
@@ -91,7 +92,7 @@ def getBestModel(model, train_generator, validation_generator):
     writeHistoryLog(history)
 
     #reload best weights
-    model.load_weights(best_weights_filepath)
+    # model.load_weights(best_weights_filepath)
     return model
 
 #####################################
