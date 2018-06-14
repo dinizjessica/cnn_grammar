@@ -1,25 +1,30 @@
 from keras.models import Sequential
 from keras.layers import Conv2D, MaxPooling2D
 from keras.layers import Activation, Flatten, Dense, Dropout, BatchNormalization
-from keras.utils import np_utils
 from keras.preprocessing.image import ImageDataGenerator
-from keras.callbacks import EarlyStopping, ModelCheckpoint
+# from keras.callbacks import EarlyStopping, ModelCheckpoint
 from keras import backend as K
+from sklearn.preprocessing import LabelBinarizer
 
-from neuralNetworkHelper import getConvQuant, hasPool, getLayerQuantity, getFCquantity
+from neuralNetworkHelper import getConvQuant, hasPool, getLayerQuantity, getFCquantity, getNumberOfClasses, getQuantityOfFilesInAFolder, getDirNamesInAFolder
 from writeFileHelper import writeLog, writeModelSummaryLog
-from keras import backend as K 
 
+import os
+import gc
 
 #####################################
 # pre-defined configuration
 #####################################
 
 data_dir = '/Users/jessicadiniz/lab-vision/atividade10/pre-process-data'
+# data_dir = '/mnt/E0A05FEAA05FC5A6/Bases/melanoma/jessica/data/data'
+
 train_data_dir = data_dir+'/train'
 validation_data_dir = data_dir+'/validation'
-nb_train_samples = 100                  # 50 bening + 50 malignant
-nb_validation_samples = 60              # 30 bening + 30 malignant 
+num_classes = getNumberOfClasses(train_data_dir)
+nb_train_samples =  getQuantityOfFilesInAFolder(train_data_dir)             # dividido igualmente entre as classes 
+nb_validation_samples = getQuantityOfFilesInAFolder(validation_data_dir)    # dividido igualmente entre as classes 
+print("nb_train_samples: " + str(nb_train_samples) + "; nb_validation_samples: " + str(nb_validation_samples))
 
 epochs = 1
 batch_size = 32
@@ -58,10 +63,12 @@ def createModelForNeuralNetwork(networkArchitecture, input_shape, addDropout, ad
 
     if addDropout:
         model.add(Dropout(0.5))
-    # model.add(Dense(num_classes, activation='softmax'))
 
-    model.add(Dense(1))
-    model.add(Activation('sigmoid'))
+    if num_classes == 2:
+        model.add(Dense(1))
+        model.add(Activation('sigmoid'))
+    else:
+        model.add(Dense(num_classes, activation='softmax'))
 
     print(model.summary())
     writeModelSummaryLog(model)
@@ -70,11 +77,18 @@ def createModelForNeuralNetwork(networkArchitecture, input_shape, addDropout, ad
 #####################################
 
 def getBestModel(model, train_generator, validation_generator):
-    model.compile(loss='binary_crossentropy',
-                  optimizer='rmsprop',
+    if num_classes == 2:
+        loss = 'binary_crossentropy'
+        optimizer = 'rmsprop'
+    else:
+        loss='sparse_categorical_crossentropy'
+        optimizer='adam'
+
+    model.compile(loss=loss,
+                  optimizer=optimizer,
                   metrics=['accuracy'])
-    best_weights_filepath = 'best_weights.hdf5'
-    earlyStopping = EarlyStopping(monitor='val_loss', patience=20, verbose=1, mode='auto')
+    # best_weights_filepath = 'best_weights.hdf5'
+    # earlyStopping = EarlyStopping(monitor='val_loss', patience=20, verbose=1, mode='auto')
     # saveBestModel = ModelCheckpoint(best_weights_filepath, monitor='val_acc', verbose=1, save_best_only=True, mode='auto')
 
     # train model
@@ -82,14 +96,18 @@ def getBestModel(model, train_generator, validation_generator):
                                   steps_per_epoch=nb_train_samples // batch_size,
                                   epochs=epochs,
                                   validation_data=validation_generator,
-                                  validation_steps=nb_validation_samples // batch_size,
-                                  callbacks=[earlyStopping]#, saveBestModel]
+                                  validation_steps=nb_validation_samples // batch_size
+                                  # callbacks=[earlyStopping, saveBestModel]
                                   )
 
     # history = model.fit(x_tr, y_trbatch_size=batch_size, nb_epoch=n_epochs,
     #           verbose=1, validation_data=(x_va, y_va), callbacks=[earlyStopping, saveBestModel])
     
     writeHistoryLog(history)
+
+    #free memory 
+    del history
+    gc.collect()
 
     #reload best weights
     # model.load_weights(best_weights_filepath)
@@ -98,7 +116,6 @@ def getBestModel(model, train_generator, validation_generator):
 #####################################
 
 def writeHistoryLog(history):
-    # import pdb; pdb.set_trace();
     acc = "acc = "+str(history.history['acc'])
     val_acc = "val_acc = "+str(history.history['val_acc'])
     loss = "loss = "+str(history.history['loss'])
@@ -119,6 +136,10 @@ def runNeuralNetwork(networkArchitecture, addDropout=False, addBatchNormalizatio
     writeLog("starting process for: " + networkArchitecture)
 
     train_datagen = ImageDataGenerator(rescale=1. / 255,
+                                        rotation_range=40,
+                                        width_shift_range=0.2,
+                                        height_shift_range=0.2,
+                                        fill_mode='nearest',
                                        shear_range=0.2,
                                        zoom_range=0.2,
                                        horizontal_flip=True)
@@ -158,6 +179,13 @@ def runNeuralNetwork(networkArchitecture, addDropout=False, addBatchNormalizatio
     print(accMsg)
     writeLog(accMsg)
 
+    del train_generator
+    del validation_generator
+    del train_datagen
+    del test_datagen
+    del model
+    gc.collect()
+
     return scores[1]
 
 #####################################
@@ -180,9 +208,9 @@ def runBests(bests, addDropout, addBatchNormalization):
 # Testes com dropout e batch normalization
 ############################################
 # bests = ['(((conv*2)pool)*3)fc*2', '(((conv*2)pool)*3)fc*1', '(((conv*2)pool)*3)fc*0']
-# bests = ['(((conv*1)pool)*1)fc*1']
+bests = ['(((conv*1)pool)*1)fc*1']
 
-# runBests(bests, True, True)
+runBests(bests, True, True)
 
 
 

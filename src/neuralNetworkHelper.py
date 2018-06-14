@@ -1,7 +1,11 @@
 import re
+import os
 
 def hasPool(redeString):
     return 'pool' in redeString;
+
+def hasDropout(redeString):
+    return 'hasDropout' in redeString;
 
 def getConvQuant(redeString):
 	convString = re.findall(r'\([^()]*\)', redeString)
@@ -21,3 +25,17 @@ def getLayerQuantity(redeString):
 def getFCquantity(redeString):
 	numberOfFC = re.findall(r'\d+', redeString)
 	return int(numberOfFC[-1])
+
+def getNumberOfClasses(path):
+    for _, dirnames, _ in os.walk(path):
+        return len(dirnames);
+
+def getQuantityOfFilesInAFolder(path):
+	quantFiles = 0
+	for _, _, filenames in os.walk(path):
+		quantFiles += len([x for x in filenames if '.DS_Store' not in x])
+	return quantFiles;
+
+def getDirNamesInAFolder(path):
+	for _, dirnames, _ in os.walk(path):
+		return dirnames
