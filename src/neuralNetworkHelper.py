@@ -2,10 +2,10 @@ import re
 import os
 
 def hasPool(redeString):
-    return 'pool' in redeString;
+    return 'sem_pool' not in redeString;
 
 def hasDropout(redeString):
-    return 'hasDropout' in redeString;
+    return 'sem_dropout' not in redeString;
 
 def getConvQuant(redeString):
 	convString = re.findall(r'\([^()]*\)', redeString)
@@ -25,6 +25,10 @@ def getLayerQuantity(redeString):
 def getFCquantity(redeString):
 	numberOfFC = re.findall(r'\d+', redeString)
 	return int(numberOfFC[-1])
+
+def getLearningRate(redeString):
+	learningRate = re.findall("\\[(.*?)\\]", redeString)
+	return float(learningRate[0])
 
 def getNumberOfClasses(path):
     for _, dirnames, _ in os.walk(path):

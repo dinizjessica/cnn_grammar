@@ -4,9 +4,9 @@ from keras.layers import Activation, Flatten, Dense, Dropout, BatchNormalization
 from keras.preprocessing.image import ImageDataGenerator
 # from keras.callbacks import EarlyStopping, ModelCheckpoint
 from keras import backend as K
-from sklearn.preprocessing import LabelBinarizer
+from keras.optimizers import RMSprop, Adam
 
-from neuralNetworkHelper import getConvQuant, hasPool, getLayerQuantity, getFCquantity, getNumberOfClasses, getQuantityOfFilesInAFolder, getDirNamesInAFolder
+from neuralNetworkHelper import getConvQuant, hasPool, getLayerQuantity, getFCquantity, getNumberOfClasses, getQuantityOfFilesInAFolder, getDirNamesInAFolder, hasDropout, getLearningRate
 from writeFileHelper import writeLog, writeModelSummaryLog
 
 import os
@@ -32,12 +32,13 @@ img_width, img_height = 150, 150
 
 #####################################
 
-def createModelForNeuralNetwork(networkArchitecture, input_shape, addDropout, addBatchNormalization):
+def createModelForNeuralNetwork(networkArchitecture, input_shape, addBatchNormalization):
 
     layerQuantity = getLayerQuantity(networkArchitecture)
     convQuantity = getConvQuant(networkArchitecture)
     pool = hasPool(networkArchitecture)
     fcQuantity = getFCquantity(networkArchitecture)
+    addDropout = hasDropout(networkArchitecture)
 
     model = Sequential()
 
@@ -76,13 +77,13 @@ def createModelForNeuralNetwork(networkArchitecture, input_shape, addDropout, ad
 
 #####################################
 
-def getBestModel(model, train_generator, validation_generator):
+def getBestModel(model, learningRate, train_generator, validation_generator):
     if num_classes == 2:
         loss = 'binary_crossentropy'
-        optimizer = 'rmsprop'
+        optimizer = RMSprop(lr=learningRate)#'rmsprop'
     else:
-        loss='sparse_categorical_crossentropy'
-        optimizer='adam'
+        loss =' sparse_categorical_crossentropy'
+        optimizer = Adam(lr=learningRate)#'adam'
 
     model.compile(loss=loss,
                   optimizer=optimizer,
@@ -132,7 +133,7 @@ def writeHistoryLog(history):
 
 #####################################
 
-def runNeuralNetwork(networkArchitecture, addDropout=False, addBatchNormalization=False):
+def runNeuralNetwork(networkArchitecture, addBatchNormalization=False):
     writeLog("starting process for: " + networkArchitecture)
 
     train_datagen = ImageDataGenerator(rescale=1. / 255,
@@ -168,8 +169,10 @@ def runNeuralNetwork(networkArchitecture, addDropout=False, addBatchNormalizatio
     if K.backend() == 'tensorflow':
         K.clear_session()
 
-    model = createModelForNeuralNetwork(networkArchitecture, input_shape, addDropout, addBatchNormalization)
-    model = getBestModel(model, train_generator, validation_generator)
+    learningRate = getLearningRate(networkArchitecture)
+
+    model = createModelForNeuralNetwork(networkArchitecture, input_shape, addBatchNormalization)
+    model = getBestModel(model, learningRate, train_generator, validation_generator)
 
     scores = model.evaluate_generator(validation_generator, nb_validation_samples)
 
@@ -190,14 +193,14 @@ def runNeuralNetwork(networkArchitecture, addDropout=False, addBatchNormalizatio
 
 #####################################
 
-def runBests(bests, addDropout, addBatchNormalization):
+def runBests(bests, addBatchNormalization):
     for arch in bests:
-        firstRun = runNeuralNetwork(arch, addDropout, addBatchNormalization)
+        firstRun = runNeuralNetwork(arch, addBatchNormalization)
         # secondRun = runNeuralNetworkCifar(arch, addDropout, addBatchNormalization)
         # thirdRun = runNeuralNetworkCifar(arch, addDropout, addBatchNormalization)
         # result = (firstRun + secondRun + thirdRun)/3
 
-        writeLog(arch + " => addDropout: " + str(addDropout) + "; addBatchNormalization: " + str(addBatchNormalization))
+        writeLog(arch + " => addBatchNormalization: " + str(addBatchNormalization))
         writeLog(arch + " => firstRun: " + str(firstRun))
         # writeLog(arch + " => firstRun: " + str(firstRun) + "; secondRun: " + str(secondRun) + "; thirdRun: " + str(thirdRun))
         # writeLog(arch + " => media: " + result)
@@ -208,9 +211,9 @@ def runBests(bests, addDropout, addBatchNormalization):
 # Testes com dropout e batch normalization
 ############################################
 # bests = ['(((conv*2)pool)*3)fc*2', '(((conv*2)pool)*3)fc*1', '(((conv*2)pool)*3)fc*0']
-bests = ['(((conv*1)pool)*1)fc*1']
+# bests = ['(((conv*1)pool)*1)fc*1']
 
-runBests(bests, True, True)
+# runBests(bests, True)
 
 
 

@@ -1,9 +1,12 @@
-<FINAL_EXP>		::=  <EXP_2><FC>
+<FINAL_EXP>		::=  <EXP_2><FC><LEARNING_RATE>
 <EXP_2>			::=  (<EXP_1>*<M>)
-<EXP_1>			::=  (<CONV><POOL>)
+<EXP_1>			::=  (<CONV> <POOL> <DROPOUT>)
 <FC>			::=  fc*<K>
-<POOL>			::=  pool|vazio
+<POOL>			::=  pool|sem_pool
+<DROPOUT>		::=  dropout|sem_dropout
 <CONV>			::=  (conv*<N>)
+<LEARNING_RATE> ::=  [<LR>]
 <N>				::=  1|2|3
 <K>				::=  0|1|2
 <M>				::=  1|2|3
+<LR>			::=  0.01|0.001|0.0001
