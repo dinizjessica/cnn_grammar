@@ -40,6 +40,9 @@ def createModelForNeuralNetwork(networkArchitecture, input_shape, addBatchNormal
     fcQuantity = getFCquantity(networkArchitecture)
     addDropout = hasDropout(networkArchitecture)
 
+    if (not pool and layerQuantity == 3 and convQuantity == 3): # adicionando pool na maior arquitetura
+        pool = True
+
     model = Sequential()
 
     filterLenght = 32    
