@@ -14,11 +14,14 @@ def openOrCreateLogFile():
 def writeLog(logMessage):
     arq = openOrCreateLogFile()
     timestamp = datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S.%f%p")
-    arq.writelines('\n'+timestamp+' --- '+logMessage)
+    msg = '\n'+timestamp+' --- '+logMessage
+    print(msg)
+    arq.writelines(msg)
     arq.close()
 
 def writeModelSummaryLog(model):
     arq = openOrCreateLogFile()
+    print(model.summary())
     timestamp = datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S.%f%p")
     arq.writelines('\n'+timestamp+'\n')
     model.summary(print_fn=lambda x: arq.write(x + '\n'))

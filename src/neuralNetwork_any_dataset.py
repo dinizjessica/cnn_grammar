@@ -16,17 +16,17 @@ import gc
 # pre-defined configuration
 #####################################
 
-data_dir = '/Users/jessicadiniz/lab-vision/atividade10/pre-process-data'
-# data_dir = '/mnt/E0A05FEAA05FC5A6/Bases/melanoma/jessica/data/data'
+# data_dir = '/Users/jessicadiniz/lab-vision/atividade10/pre-process-data'
+data_dir = '/mnt/E0A05FEAA05FC5A6/Bases/melanoma/jessica/data/data'
 
 train_data_dir = data_dir+'/train'
 validation_data_dir = data_dir+'/validation'
 num_classes = getNumberOfClasses(train_data_dir)
 nb_train_samples =  getQuantityOfFilesInAFolder(train_data_dir)             # dividido igualmente entre as classes 
 nb_validation_samples = getQuantityOfFilesInAFolder(validation_data_dir)    # dividido igualmente entre as classes 
-print("nb_train_samples: " + str(nb_train_samples) + "; nb_validation_samples: " + str(nb_validation_samples))
+# print("nb_train_samples: " + str(nb_train_samples) + "; nb_validation_samples: " + str(nb_validation_samples))
 
-epochs = 1
+epochs = 32
 batch_size = 32
 img_width, img_height = 150, 150
 
@@ -41,6 +41,7 @@ def createModelForNeuralNetwork(networkArchitecture, input_shape, addBatchNormal
     addDropout = hasDropout(networkArchitecture)
 
     if (not pool and layerQuantity == 3 and convQuantity == 3): # adicionando pool na maior arquitetura
+        writeLog("adicionando pool em arquitetura muito grande")
         pool = True
 
     model = Sequential()
@@ -74,7 +75,6 @@ def createModelForNeuralNetwork(networkArchitecture, input_shape, addBatchNormal
     else:
         model.add(Dense(num_classes, activation='softmax'))
 
-    print(model.summary())
     writeModelSummaryLog(model)
     return model;
 
@@ -128,10 +128,6 @@ def writeHistoryLog(history):
     writeLog(val_acc)
     writeLog(loss)
     writeLog(val_loss)
-    print(acc)
-    print(val_acc)
-    print(loss)
-    print(val_loss)
     return;
 
 #####################################
@@ -181,9 +177,7 @@ def runNeuralNetwork(networkArchitecture, addBatchNormalization=False):
 
     accuracy = scores[1]
 
-    accMsg = "Accuracy on test data is: " + str(accuracy)
-    print(accMsg)
-    writeLog(accMsg)
+    writeLog("Accuracy on test data is: " + str(accuracy))
 
     del train_generator
     del validation_generator
