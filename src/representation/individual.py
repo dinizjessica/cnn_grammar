@@ -155,7 +155,7 @@ class Individual(object):
         """
 
         # Evaluate fitness using specified fitness function.
-        # import pdb; pdb.set_trace()
+        import pdb; pdb.set_trace()
         self.fitness = runNeuralNetwork(self.phenotype)
         # self.fitness = runNeuralNetwork(self.phenotype)#params['FITNESS_FUNCTION'](self)
         # import pdb; pdb.set_trace()

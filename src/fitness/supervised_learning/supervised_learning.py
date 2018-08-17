@@ -95,7 +95,7 @@ class supervised_learning(base_ff):
         else:
             # phenotype won't refer to C
             # from scipy.special import expit
-            # import pdb; pdb.set_trace();
+            import pdb; pdb.set_trace();
             # yhat = eval(ind.phenotype, {'sig':expit, 'x':x})
             
             yhat = runNeuralNetwork(ind.phenotype)
