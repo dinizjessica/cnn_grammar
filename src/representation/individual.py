@@ -4,7 +4,8 @@ from algorithm.mapper import mapper
 from algorithm.parameters import params
 
 # from neuralNetworkCifar import runNeuralNetworkCifar
-from neuralNetwork_any_dataset import runNeuralNetwork
+# from neuralNetwork_any_dataset import runNeuralNetwork
+from neuralNetwork_assuncao import runNeuralNetwork
 
 class Individual(object):
     """
@@ -155,7 +156,7 @@ class Individual(object):
         """
 
         # Evaluate fitness using specified fitness function.
-        import pdb; pdb.set_trace()
+        # import pdb; pdb.set_trace()
         self.fitness = runNeuralNetwork(self.phenotype)
         # self.fitness = runNeuralNetwork(self.phenotype)#params['FITNESS_FUNCTION'](self)
         # import pdb; pdb.set_trace()

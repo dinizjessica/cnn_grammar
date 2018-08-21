@@ -9,7 +9,7 @@ from utilities.fitness.optimize_constants import optimize_constants
 from fitness.base_ff_classes.base_ff import base_ff
 
 # from neuralNetworkCifar import runNeuralNetworkCifar
-from neuralNetwork_any_dataset import runNeuralNetwork
+from neuralNetwork_assuncao import runNeuralNetwork
 
 class supervised_learning(base_ff):
     """
@@ -95,7 +95,7 @@ class supervised_learning(base_ff):
         else:
             # phenotype won't refer to C
             # from scipy.special import expit
-            import pdb; pdb.set_trace();
+            # import pdb; pdb.set_trace();
             # yhat = eval(ind.phenotype, {'sig':expit, 'x':x})
             
             yhat = runNeuralNetwork(ind.phenotype)
