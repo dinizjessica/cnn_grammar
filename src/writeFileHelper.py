@@ -3,7 +3,10 @@ import datetime
 
 
 def openOrCreateLogFile():
-    fileName = 'log_'+datetime.datetime.now().strftime("%d-%b-%y")+'.txt'
+    directory = 'log'
+    fileName = directory+'/log_'+datetime.datetime.now().strftime("%d-%b-%y")+'.txt'
+    if not os.path.exists(directory):
+        os.makedirs(directory)
     if os.path.isfile(fileName):
         arq = open(fileName, 'a')
     else:
