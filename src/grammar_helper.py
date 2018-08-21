@@ -5,12 +5,6 @@ from keras.layers import Conv2D, MaxPooling2D, AveragePooling2D, Dense, Merge, B
 from keras.optimizers import SGD
 from keras.models import Sequential
 
-# (layer:conv num-filters:32 filter-shape:1 stride:3 padding:valid act:sigmoid bias:False batch-normalisation:False merge-input:False) 
-# (pool-type:layer:pool-avg kernel-size:1 stride:1 padding:same) 
-# (pool-type:layer:pool-max kernel-size:3 stride:2 padding:valid) 
-# (layer:fc act:relu num-units:2048 bias:True) 
-# (layer:fc act:softmax num-units:10 bias:True) 
-# (learning:gradient-descent learning-rate:0.001)
 
 def getConvOrPoolLayerArray(redeString):
 	redeArray = splitRede(redeString)
@@ -23,7 +17,7 @@ def getConvOrPoolLayer(convOrPoolString, input_shape):
 	if(layerType == 'conv'):
 		return getConvLayer(convOrPoolString, input_shape)
 	elif(layerType == 'pool-avg' or layerType == 'pool-max'):
-		return getPoolLayer(convOrPoolString)
+		return getPoolLayer(convOrPoolString, input_shape)
 
 def getClassificationLayerArray(redeString):
 	redeArray = splitRede(redeString)
@@ -75,18 +69,17 @@ def getConvLayer(convString, input_shape):
 	batchNormalisation = True if getValueFrom(convString, 'batch-normalisation') == 'True' else False
 	mergeInput = True if getValueFrom(convString, 'merge-input') == 'True' else False #nao sei como usar
 	
-	# model_x1 = Sequential()
-	# model_x1.add(Conv2D(numFilters, filterShape, activation=activation, padding=padding, input_shape=input_shape, use_bias=bias))
-	# if batchNormalisation: 
-	# 	model_x1.add(BatchNormalization())
+	
+	return Conv2D(numFilters, filterShape, activation=activation, padding=padding, input_shape=input_shape, use_bias=bias)
 
-	out_i = Conv2D(numFilters, filterShape, activation=activation, padding=padding, input_shape=input_shape, use_bias=bias)
-	if batchNormalisation: 
-		out_i = BatchNormalization()(out_i)
+def hasBatchNormalization(convOrPoolString):
+	layerType = getValueFrom(convOrPoolString, 'layer')
 
-	return Concatenate([out_i])
+	if(layerType == 'conv'):
+		return True if getValueFrom(convOrPoolString, 'batch-normalisation') == 'True' else False
+	return False
 
-def getPoolLayer(poolString):
+def getPoolLayer(poolString, input_shape):
 	# (pool-type:layer:pool-avg kernel-size:1 stride:1 padding:same) 
 	# MaxPooling2D(pool_size=(2, 2), strides=None, padding='valid', data_format=None)
 	# AveragePooling2D(pool_size=(2, 2), strides=None, padding='valid', data_format=None)
@@ -96,9 +89,9 @@ def getPoolLayer(poolString):
 	padding = getValueFrom(poolString, 'padding')
 
 	if poolType == 'pool-max':
-		return MaxPooling2D(pool_size=(2, 2), padding=padding)
+		return 	MaxPooling2D(pool_size=(2, 2), padding=padding, input_shape=input_shape)
 	elif poolType == 'pool-avg':
-		return AveragePooling2D(pool_size=(2, 2), padding=padding)
+		return AveragePooling2D(pool_size=(2, 2), padding=padding, input_shape=input_shape)
 
 def getFCLayer(fcString): # classification and softmax
 	# (layer:fc act:relu num-units:2048 bias:True) 
@@ -119,19 +112,3 @@ def getValueFrom(convString, fieldName):
 	rg = re.compile(regex,re.IGNORECASE|re.DOTALL)
 	m = rg.search(convString)
 	return m.group(1)
-
-
-
-# ind = '(layer:conv num-filters:32 filter-shape:1 stride:3 padding:valid act:sigmoid bias:False batch-normalisation:False merge-input:False) (pool-type:layer:pool-avg kernel-size:1 stride:1 padding:same) (pool-type:layer:pool-max kernel-size:3 stride:2 padding:valid) (layer:fc act:relu num-units:2048 bias:True) (layer:fc act:softmax num-units:10 bias:True) (learning:gradient-descent learning-rate:0.001)'
-# conv = 'layer:conv num-filters:32 filter-shape:1 stride:3 padding:valid act:sigmoid bias:False batch-normalisation:True merge-input:False'
-# pool_avg = 'layer:pool-avg kernel-size:1 stride:1 padding:same'
-# pool_max = 'pool-type:layer:pool-max kernel-size:3 stride:2 padding:valid'
-# lr = 'learning:gradient-descent learning-rate:0.001'
-# input_shape = (3, 150, 150)
-# red = splitRede(ind)
-# import pdb; pdb.set_trace()
-# getConvLayer(conv, input_shape)
-# getPoolLayer(pool_max)
-# getLearningOpt(lr)
-# ind = '(layer:conv num-filters:128 filter-shape:2 stride:3 padding:same act:sigmoid bias:False batch-normalisation:True merge-input:False) (layer:pool-max kernel-size:1 stride:2 padding:valid) (layer:fc act:sigmoid num-units:0000 bias:False) (layer:fc act:sigmoid num-units:1111 bias:False) (layer:fc act:softmax num-units:10 bias:True) (learning:gradient-descent learning-rate:0.001)'
-# print(getClassificationLayerArray(ind))

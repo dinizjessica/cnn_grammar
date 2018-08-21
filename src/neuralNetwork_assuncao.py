@@ -14,7 +14,7 @@ from keras.datasets import cifar10
 from writeFileHelper import writeLog, writeModelSummaryLog
 from keras import backend as K 
 
-from grammar_helper import getConvOrPoolLayerArray, getConvOrPoolLayer, getClassificationLayerArray, getClassificationLayer, getSoftmaxLayer, getLearningOptFromNetwork
+from grammar_helper import getConvOrPoolLayerArray, getConvOrPoolLayer, getClassificationLayerArray, getClassificationLayer, getSoftmaxLayer, getLearningOptFromNetwork, hasBatchNormalization
 
 import os
 import gc
@@ -35,12 +35,16 @@ def createModelForNeuralNetwork(networkArchitecture, input_shape):
     convOrPoolLayerArray = getConvOrPoolLayerArray(networkArchitecture)
 
     for layer in convOrPoolLayerArray:
+        print(layer)
         model.add(getConvOrPoolLayer(layer, input_shape))
+        if (hasBatchNormalization(layer)):
+          model.add(BatchNormalization())
 
     model.add(Flatten())
     # fully-connected - <classification>
     classLayerArray = getClassificationLayerArray(networkArchitecture)
     for classLayer in classLayerArray:
+        print(classLayerArray)
         model.add(getClassificationLayer(classLayer))
 
     # fully-connected - <softmax>
@@ -139,8 +143,10 @@ def runNeuralNetworkCifar(networkArchitecture, useDataAugmentation=False):
 # tests
 ####################################
 
-writeLog('####################################')
-writeLog('STARTING')
-writeLog('####################################')
-ind = '(layer:conv num-filters:128 filter-shape:2 stride:3 padding:same act:sigmoid bias:False batch-normalisation:True merge-input:False) (pool-type:layer:pool-max kernel-size:1 stride:2 padding:valid) (layer:fc act:sigmoid num-units:512 bias:False) (layer:fc act:softmax num-units:10 bias:True) (learning:gradient-descent learning-rate:0.001)'
-runNeuralNetworkCifar(ind)
+# writeLog('####################################')
+# writeLog('STARTING')
+# writeLog('####################################')
+# ind = '(layer:conv num-filters:128 filter-shape:2 stride:3 padding:same act:sigmoid bias:False batch-normalisation:True merge-input:False) (layer:pool-max kernel-size:1 stride:2 padding:valid) (layer:fc act:sigmoid num-units:512 bias:False) (layer:fc act:softmax num-units:10 bias:True) (learning:gradient-descent learning-rate:0.001)'
+# ind = '(layer:conv num-filters:256 filter-shape:4 stride:1 padding:valid act:relu bias:True batch-normalisation:False merge-input:False) (layer:conv num-filters:64 filter-shape:2 stride:3 padding:same act:linear bias:False batch-normalisation:True merge-input:True) (layer:conv num-filters:32 filter-shape:1 stride:3 padding:valid act:relu bias:True batch-normalisation:False merge-input:False) (layer:conv num-filters:32 filter-shape:5 stride:3 padding:same act:linear bias:True batch-normalisation:False merge-input:False) (layer:conv num-filters:128 filter-shape:4 stride:1 padding:same act:relu bias:False batch-normalisation:False merge-input:False) (layer:conv num-filters:32 filter-shape:2 stride:1 padding:same act:relu bias:False batch-normalisation:False merge-input:True) (layer:conv num-filters:256 filter-shape:1 stride:2 padding:valid act:relu bias:False batch-normalisation:False merge-input:True) (layer:conv num-filters:128 filter-shape:4 stride:2 padding:same act:sigmoid bias:True batch-normalisation:False merge-input:False) (layer:conv num-filters:256 filter-shape:1 stride:1 padding:same act:sigmoid bias:False batch-normalisation:False merge-input:True) (layer:fc act:sigmoid num-units:128 bias:True) (layer:fc act:softmax num-units:10 bias:True) (learning:gradient-descent learning-rate:0.01)'
+# ind = '(layer:pool-max kernel-size:1 stride:2 padding:valid) (layer:conv num-filters:256 filter-shape:4 stride:1 padding:valid act:relu bias:True batch-normalisation:False merge-input:False) (layer:conv num-filters:64 filter-shape:2 stride:3 padding:same act:linear bias:False batch-normalisation:True merge-input:True) (layer:pool-max kernel-size:1 stride:2 padding:valid) (layer:conv num-filters:32 filter-shape:1 stride:3 padding:valid act:relu bias:True batch-normalisation:False merge-input:False) (layer:conv num-filters:32 filter-shape:5 stride:3 padding:same act:linear bias:True batch-normalisation:False merge-input:False) (layer:conv num-filters:128 filter-shape:4 stride:1 padding:same act:relu bias:False batch-normalisation:False merge-input:False) (layer:conv num-filters:32 filter-shape:2 stride:1 padding:same act:relu bias:False batch-normalisation:False merge-input:True) (layer:conv num-filters:256 filter-shape:1 stride:2 padding:valid act:relu bias:False batch-normalisation:False merge-input:True) (layer:conv num-filters:128 filter-shape:4 stride:2 padding:same act:sigmoid bias:True batch-normalisation:False merge-input:False) (layer:conv num-filters:256 filter-shape:1 stride:1 padding:same act:sigmoid bias:False batch-normalisation:False merge-input:True) (layer:fc act:sigmoid num-units:128 bias:True) (layer:fc act:softmax num-units:10 bias:True) (learning:gradient-descent learning-rate:0.01)'
+# runNeuralNetworkCifar(ind)
