@@ -17,7 +17,9 @@ import gc
 #####################################
 
 # data_dir = '/Users/jessicadiniz/lab-vision/atividade10/pre-process-data'
-data_dir = '/mnt/E0A05FEAA05FC5A6/Bases/melanoma/jessica/data/data'
+#data_dir = '/mnt/E0A05FEAA05FC5A6/Bases/melanoma/jessica/data/data'
+#data_dir = '/mnt/E0A05FEAA05FC5A6/Bases/mamografia/IRMA/Experiment'
+data_dir = '/mnt/E0A05FEAA05FC5A6/Bases/Pulmao/LUNA_raissa/Cortes2/Experiments_planox'
 
 train_data_dir = data_dir+'/train'
 validation_data_dir = data_dir+'/validation'
@@ -26,9 +28,11 @@ nb_train_samples =  getQuantityOfFilesInAFolder(train_data_dir)             # di
 nb_validation_samples = getQuantityOfFilesInAFolder(validation_data_dir)    # dividido igualmente entre as classes 
 # print("nb_train_samples: " + str(nb_train_samples) + "; nb_validation_samples: " + str(nb_validation_samples))
 
-epochs = 32
+epochs = 50
 batch_size = 32
-img_width, img_height = 150, 150
+#img_width, img_height = 150, 150
+#img_width, img_height = 130, 130
+img_width, img_height = 65, 65
 
 #####################################
 
