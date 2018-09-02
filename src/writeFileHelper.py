@@ -26,8 +26,8 @@ def writeArray(arrayMessage):
     arq = openOrCreateLogFile()
     timestamp = '\n'+datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S.%f%p")+' --- '
     for element in arrayMessage:
-        print(timestamp+element)
-        arq.writelines(timestamp+element)
+        print(str(timestamp)+str(element))
+        arq.writelines(str(timestamp)+str(element))
     arq.close()
 
 

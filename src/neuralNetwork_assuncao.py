@@ -11,7 +11,7 @@ from sklearn.model_selection import train_test_split
 
 from keras.datasets import cifar10
 
-from writeFileHelper import writeLog, writeModelSummaryLog
+from writeFileHelper import writeLog, writeModelSummaryLog, writeArray
 from keras import backend as K 
 
 from grammar_helper import getConvOrPoolLayerArray, getConvOrPoolLayer, getClassificationLayerArray, getClassificationLayer, getSoftmaxLayer, getLearningOptFromNetwork, hasBatchNormalization
