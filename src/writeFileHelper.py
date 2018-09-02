@@ -25,11 +25,10 @@ def writeLog(logMessage):
 def writeArray(arrayMessage):
     arq = openOrCreateLogFile()
     timestamp = '\n'+datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S.%f%p")+' --- '
-    for element in arrayMessage:
-        print(str(timestamp)+str(element))
-        arq.writelines(str(timestamp)+str(element))
+    arrayAsStr = ", ".join(map(str,arrayMessage))
+    print(str(timestamp)+arrayAsStr)
+    arq.writelines(str(timestamp)+arrayAsStr)
     arq.close()
-
 
 def writeModelSummaryLog(model):
     arq = openOrCreateLogFile()
