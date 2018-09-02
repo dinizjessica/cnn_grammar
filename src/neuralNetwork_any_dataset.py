@@ -85,7 +85,7 @@ def getBestModel(model, learningRate, train_generator, validation_generator):
         loss = 'binary_crossentropy'
         optimizer = RMSprop(lr=learningRate)#'rmsprop'
     else:
-        loss =' sparse_categorical_crossentropy'
+        loss ='sparse_categorical_crossentropy'
         optimizer = Adam(lr=learningRate)#'adam'
 
     model.compile(loss=loss,

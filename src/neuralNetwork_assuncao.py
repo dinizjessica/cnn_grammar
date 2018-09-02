@@ -66,7 +66,6 @@ def accuracy(test_x, test_y, model):
 #####################################
 
 def runNeuralNetwork(networkArchitecture, useDataAugmentation=False):
-
     writeLog("starting process for: " + networkArchitecture)
     # load cifar data
     (train_features, train_labels), (test_features, test_labels) = cifar10.load_data()
@@ -117,7 +116,7 @@ def runNeuralNetwork(networkArchitecture, useDataAugmentation=False):
                                verbose=0)
     
     writeLog("[INFO] evaluating network...")
-    predictions = model.predict(test_features_val, batch_size=batch_size)
+    # predictions = model.predict(test_features_val, batch_size=batch_size)
 
     end = time.time()
     diff = int(end - start)

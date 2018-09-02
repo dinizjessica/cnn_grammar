@@ -6,6 +6,10 @@ from algorithm.parameters import params
 # from neuralNetworkCifar import runNeuralNetworkCifar
 # from neuralNetwork_any_dataset import runNeuralNetwork
 from neuralNetwork_assuncao import runNeuralNetwork
+from writeFileHelper import writeLog
+from representation.tree import Tree
+from representation.derivation import generate_tree, pi_grow
+
 
 class Individual(object):
     """
@@ -23,7 +27,7 @@ class Individual(object):
         :param map_ind: A boolean flag that indicates whether or not an
         individual needs to be mapped.
         """
-
+        
         if map_ind:
             # The individual needs to be mapped from the given input
             # parameters.
@@ -157,9 +161,38 @@ class Individual(object):
 
         # Evaluate fitness using specified fitness function.
         # import pdb; pdb.set_trace()
-        self.fitness = runNeuralNetwork(self.phenotype)
+        while True: 
+            try:
+                # import pdb; pdb.set_trace()
+                self.fitness = runNeuralNetwork(self.phenotype)
+                break
+            except Exception as error:
+                # import pdb; pdb.set_trace()
+                writeLog('Caught this error: ' + repr(error))
+                # generate new individual
+                depths = range(params['BNF_GRAMMAR'].min_ramp + 1,
+                    params['MAX_INIT_TREE_DEPTH']+1)
+                size = params['POPULATION_SIZE']
+                if size < len(depths):
+                    depths = depths[:int(size)]
+                generate_new_genome_and_phenotype(depths[int(len(depths)/2)], self)
+
+        
         # self.fitness = runNeuralNetwork(self.phenotype)#params['FITNESS_FUNCTION'](self)
         # import pdb; pdb.set_trace()
 
         if params['MULTICORE']:
             return self
+
+def generate_new_genome_and_phenotype(max_depth, self):
+    # Initialise an instance of the tree class
+    ind_tree = Tree(str(params['BNF_GRAMMAR'].start_rule["symbol"]), None)
+
+    # Generate a tree
+    genome, output, nodes, depth = pi_grow(ind_tree, max_depth)
+    # Get remaining individual information
+    phenotype, invalid, used_cod = "".join(output), False, len(genome)
+
+    self.phenotype, self.nodes = phenotype, nodes
+    self.genome = genome
+    self.depth, self.used_codons, self.invalid = depth, used_cod, invalid

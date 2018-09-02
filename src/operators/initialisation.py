@@ -209,7 +209,7 @@ def PI_grow(size):
     :param size: The size of the required population.
     :return: A full population of individuals.
     """
-
+    
     # Calculate the range of depths to ramp individuals from.
     depths = range(params['BNF_GRAMMAR'].min_ramp + 1,
                    params['MAX_INIT_TREE_DEPTH']+1)
@@ -327,7 +327,7 @@ def generate_PI_ind_tree(max_depth):
 
     # Get remaining individual information
     phenotype, invalid, used_cod = "".join(output), False, len(genome)
-
+    
     if params['BNF_GRAMMAR'].python_mode:
         # Grammar contains python code
 

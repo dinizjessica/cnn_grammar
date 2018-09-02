@@ -16,7 +16,6 @@ def search_loop():
     :return: The final population after the evolutionary process has run for
     the specified number of generations.
     """
-
     if params['MULTICORE']:
         # initialize pool once, if mutlicore is enabled
         params['POOL'] = Pool(processes=params['CORES'], initializer=pool_init,
