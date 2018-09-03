@@ -161,21 +161,26 @@ class Individual(object):
 
         # Evaluate fitness using specified fitness function.
         # import pdb; pdb.set_trace()
+        tries = 0
         while True: 
             try:
                 # import pdb; pdb.set_trace()
-                self.fitness = runNeuralNetwork(self.phenotype)
+                if(tries<5):
+                    self.fitness = runNeuralNetwork(self.phenotype)
+                else:
+                    writeLog('5 attempts reached for ' + self.phenotype)
+                    self.fitness = 0
                 break
+                
             except Exception as error:
                 # import pdb; pdb.set_trace()
-                writeLog('Caught this error: ' + repr(error))
+                writeLog('[individual.py] Caught this error: ' + repr(error))
+                writeLog('tries '+ str(tries))
+                tries += 1
                 # generate new individual
-                depths = range(params['BNF_GRAMMAR'].min_ramp + 1,
-                    params['MAX_INIT_TREE_DEPTH']+1)
-                size = params['POPULATION_SIZE']
-                if size < len(depths):
-                    depths = depths[:int(size)]
-                generate_new_genome_and_phenotype(depths[int(len(depths)/2)], self)
+                phenotype, nodes, genome, depth, used_cod, invalid = generate_new_genome_and_phenotype()
+                self.phenotype, self.nodes, self.genome = phenotype, nodes, genome
+                self.depth, self.used_codons, self.invalid = depth, used_cod, invalid
 
         
         # self.fitness = runNeuralNetwork(self.phenotype)#params['FITNESS_FUNCTION'](self)
@@ -184,7 +189,16 @@ class Individual(object):
         if params['MULTICORE']:
             return self
 
-def generate_new_genome_and_phenotype(max_depth, self):
+def generate_new_genome_and_phenotype():
+    writeLog('Creating new individual values')
+
+    depths = range(params['BNF_GRAMMAR'].min_ramp + 1, params['MAX_INIT_TREE_DEPTH']+1)
+    size = params['POPULATION_SIZE']
+    if size < len(depths):
+        depths = depths[:int(size)]
+
+    max_depth = depths[int(len(depths)/2)]
+
     # Initialise an instance of the tree class
     ind_tree = Tree(str(params['BNF_GRAMMAR'].start_rule["symbol"]), None)
 
@@ -193,6 +207,4 @@ def generate_new_genome_and_phenotype(max_depth, self):
     # Get remaining individual information
     phenotype, invalid, used_cod = "".join(output), False, len(genome)
 
-    self.phenotype, self.nodes = phenotype, nodes
-    self.genome = genome
-    self.depth, self.used_codons, self.invalid = depth, used_cod, invalid
+    return phenotype, nodes, genome, depth, used_cod, invalid

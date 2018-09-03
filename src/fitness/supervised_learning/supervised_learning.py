@@ -10,6 +10,7 @@ from fitness.base_ff_classes.base_ff import base_ff
 
 # from neuralNetworkCifar import runNeuralNetworkCifar
 from neuralNetwork_assuncao import runNeuralNetwork
+from representation.individual import generate_new_genome_and_phenotype
 
 class supervised_learning(base_ff):
     """
@@ -98,8 +99,19 @@ class supervised_learning(base_ff):
             # import pdb; pdb.set_trace();
             # yhat = eval(ind.phenotype, {'sig':expit, 'x':x})
             
-            yhat = runNeuralNetwork(ind.phenotype)
-            # yhat = runNeuralNetworkCifar(ind.phenotype)
+            
+            while True: 
+                try:
+                    # import pdb; pdb.set_trace()
+                    yhat = runNeuralNetwork(ind.phenotype)
+
+                except Exception as error:
+                    # import pdb; pdb.set_trace()
+                    writeLog('[supervised_learning.py] Caught this error: ' + repr(error))
+                    # generate new individual
+                    phenotype, nodes, genome, depth, used_cod, invalid = generate_new_genome_and_phenotype()
+                    ind.phenotype, ind.nodes, ind.genome = phenotype, nodes, genome
+                    ind.depth, ind.used_codons, ind.invalid = depth, used_cod, invalid
             
             # import pdb; pdb.set_trace()
             assert np.isrealobj(yhat)
