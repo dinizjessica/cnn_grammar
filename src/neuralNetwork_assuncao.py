@@ -22,7 +22,7 @@ import gc
 #####################################
 # pre-defined configuration
 #####################################
-epochs = 10
+epochs = 400
 batch_size = 128
 input_shape=(32,32,3)
 

@@ -1,0 +1,5 @@
+from neuralNetwork_assuncao import runNeuralNetwork
+
+ind = '(layer:conv num-filters:128 filter-shape:2 stride:2 padding:valid act:relu bias:True batch-normalisation:True merge-input:True) (layer:conv num-filters:128 filter-shape:3 stride:3 padding:same act:sigmoid bias:True batch-normalisation:True merge-input:False) (layer:conv num-filters:256 filter-shape:1 stride:3 padding:valid act:relu bias:True batch-normalisation:False merge-input:False) (layer:conv num-filters:64 filter-shape:2 stride:3 padding:same act:relu bias:False batch-normalisation:True merge-input:False) (layer:conv num-filters:32 filter-shape:5 stride:2 padding:same act:linear bias:True batch-normalisation:False merge-input:False) (layer:pool-avg kernel-size:5 stride:2 padding:same) (layer:conv num-filters:128 filter-shape:2 stride:2 padding:valid act:relu bias:False batch-normalisation:False merge-input:True) (layer:fc act:sigmoid num-units:1024 bias:True) (layer:fc act:softmax num-units:10 bias:True) (learning:gradient-descent learning-rate:0.1)'
+
+runNeuralNetwork(ind, True)
