@@ -99,14 +99,8 @@ def runNeuralNetwork(networkArchitecture, useDataAugmentation=False):
 
     if (useDataAugmentation):
         # adding data augmentation
-        datagen = ImageDataGenerator(rescale=1. / 255,
-                                        rotation_range=40,
-                                        width_shift_range=0.2,
-                                        height_shift_range=0.2,
-                                        fill_mode='nearest',
-                                       shear_range=0.2,
-                                       zoom_range=0.2,
-                                       horizontal_flip=True)
+        datagen = ImageDataGenerator(zoom_range=0.2,
+                                     horizontal_flip=True)
 
         model_info = model.fit_generator(datagen.flow(train_features, train_labels, batch_size = batch_size),
                                          steps_per_epoch = train_features.shape[0]//batch_size, 
