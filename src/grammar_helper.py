@@ -70,7 +70,7 @@ def getConvLayer(convString, input_shape):
 	mergeInput = True if getValueFrom(convString, 'merge-input') == 'True' else False #nao sei como usar
 	
 	
-	return Conv2D(numFilters, filterShape, activation=activation, strides=stride, padding=padding, input_shape=input_shape, use_bias=bias)
+	return Conv2D(numFilters, filterShape, activation=activation, padding=padding, input_shape=input_shape, use_bias=bias)
 
 def hasBatchNormalization(convOrPoolString):
 	layerType = getValueFrom(convOrPoolString, 'layer')
