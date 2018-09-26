@@ -4,6 +4,7 @@ import numpy as np
 from keras.models import Sequential
 from keras.layers import Conv2D, MaxPooling2D, AveragePooling2D, Dense, Flatten, BatchNormalization
 from keras.optimizers import SGD
+from keras.callbacks import LearningRateScheduler, Callback
 
 from keras.preprocessing.image import ImageDataGenerator
 from sklearn.preprocessing import LabelBinarizer
@@ -65,6 +66,21 @@ def accuracy(test_x, test_y, model):
 
 #####################################
 
+# 0.01 -> do 0 ate o 5th
+# 0.1 -> do 6th ate o 250th 
+# 0.01 -> do 251st ate o 375th
+# 0.001 -> do 376th ate o 400th
+
+def step_decay(epoch):
+    if (epoch <= 5 or (epoch > 250 and epoch <= 375)):
+        return 0.01
+    elif epoch > 5 and epoch <= 250:
+        return 0.1
+    elif epoch > 375:
+        return 0.001
+
+#####################################
+
 def runNeuralNetwork(networkArchitecture, useDataAugmentation=False):
     writeLog("starting process for: " + networkArchitecture)
     # load cifar data
@@ -97,6 +113,10 @@ def runNeuralNetwork(networkArchitecture, useDataAugmentation=False):
     # train the model
     start = time.time()
 
+    # alterar o learning rate em determinados pontos
+    lrate = LearningRateScheduler(step_decay) 
+    callbacks_list = [lrate]
+
     if (useDataAugmentation):
         # adding data augmentation
         datagen = ImageDataGenerator(zoom_range=0.2,
@@ -106,6 +126,7 @@ def runNeuralNetwork(networkArchitecture, useDataAugmentation=False):
                                          steps_per_epoch = train_features.shape[0]//batch_size, 
                                          epochs = epochs, 
                                          validation_data = (test_features_val, test_labels_val), 
+                                         callbacks=callbacks_list,
                                          verbose=0)
 
     else:
@@ -113,6 +134,7 @@ def runNeuralNetwork(networkArchitecture, useDataAugmentation=False):
                                batch_size=batch_size, 
                                epochs=epochs, 
                                validation_data = (test_features_val, test_labels_val), 
+                               callbacks=callbacks_list,
                                verbose=0)
     
     writeLog("[INFO] evaluating network...")

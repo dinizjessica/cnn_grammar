@@ -62,7 +62,7 @@ def getConvLayer(convString, input_shape):
 	numFilters = int(getValueFrom(convString, 'num-filters'))
 	filterShapeNum = int(getValueFrom(convString, 'filter-shape'))
 	filterShape = (filterShapeNum,filterShapeNum)
-	stride = getValueFrom(convString, 'stride') #nao coloquei ainda
+	stride = getValueFrom(convString, 'stride')
 	padding = getValueFrom(convString, 'padding')
 	activation = getValueFrom(convString, 'act')
 	bias = True if getValueFrom(convString, 'bias') == 'True' else False
@@ -70,7 +70,7 @@ def getConvLayer(convString, input_shape):
 	mergeInput = True if getValueFrom(convString, 'merge-input') == 'True' else False #nao sei como usar
 	
 	
-	return Conv2D(numFilters, filterShape, activation=activation, padding=padding, input_shape=input_shape, use_bias=bias)
+	return Conv2D(numFilters, filterShape, activation=activation, strides=stride, padding=padding, input_shape=input_shape, use_bias=bias)
 
 def hasBatchNormalization(convOrPoolString):
 	layerType = getValueFrom(convOrPoolString, 'layer')
@@ -85,13 +85,13 @@ def getPoolLayer(poolString, input_shape):
 	# AveragePooling2D(pool_size=(2, 2), strides=None, padding='valid', data_format=None)
 	poolType = getValueFrom(poolString, 'layer')
 	kernelSize = int(getValueFrom(poolString, 'kernel-size')) # seria o pool_size?
-	stride = int(getValueFrom(poolString, 'stride')) #nao coloquei ainda
+	stride = int(getValueFrom(poolString, 'stride'))
 	padding = getValueFrom(poolString, 'padding')
 
 	if poolType == 'pool-max':
-		return 	MaxPooling2D(pool_size=(2, 2), padding=padding, input_shape=input_shape)
+		return 	MaxPooling2D(pool_size=(2, 2), strides=stride, padding=padding, input_shape=input_shape)
 	elif poolType == 'pool-avg':
-		return AveragePooling2D(pool_size=(2, 2), padding=padding, input_shape=input_shape)
+		return AveragePooling2D(pool_size=(2, 2), strides=stride, padding=padding, input_shape=input_shape)
 
 def getFCLayer(fcString): # classification and softmax
 	# (layer:fc act:relu num-units:2048 bias:True) 
