@@ -5,7 +5,7 @@ from keras import backend as K
 
 from neuralNetworkHelper import getNumberOfClasses, getQuantityOfFilesInAFolder
 from writeFileHelper import writeLog
-from grammar_helper import createModelForNeuralNetwork, getLearningOptFromNetwork, step_decay
+from grammar_helper import createModelForNeuralNetwork, getLearningOptFromNetwork
 
 import os
 import gc
@@ -97,6 +97,19 @@ def runNeuralNetwork(networkArchitecture, data_dir, epochs=100, batch_size=32, i
 
     return accuracy
 
+#####################################
+# 0.01 -> do 0 ate o 5th
+# 0.1 -> do 6th ate o 250th 
+# 0.01 -> do 251st ate o 375th
+# 0.001 -> do 376th ate o 400th
+
+def step_decay(epoch):
+    if (epoch <= 5 or (epoch > 250 and epoch <= 375)):
+        return 0.01
+    elif epoch > 5 and epoch <= 250:
+        return 0.1
+    elif epoch > 375:
+        return 0.001
 #####################################
 def getInputShape(img_width, img_height):
     # img rgb => 3 channels => depth 3
