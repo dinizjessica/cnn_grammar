@@ -1,68 +1,16 @@
-from keras.models import Sequential
-from keras.layers import Flatten, BatchNormalization, Dropout, Dense
 from keras.preprocessing.image import ImageDataGenerator
 from keras.callbacks import LearningRateScheduler, Callback
-# from keras.layers import Activation, Flatten, Dense, Dropout, BatchNormalization
+
 from keras import backend as K
-# from keras.optimizers import Adam
 
 from neuralNetworkHelper import getNumberOfClasses, getQuantityOfFilesInAFolder
-from writeFileHelper import writeLog, writeModelSummaryLog
-from grammar_helper import getConvOrPoolLayerArray, getConvOrPoolLayer, getClassificationLayerArray, getClassificationLayer, getSoftmaxLayer, getLearningOptFromNetwork, hasBatchNormalization
+from writeFileHelper import writeLog
+from grammar_helper import createModelForNeuralNetwork, getLearningOptFromNetwork
 
 import os
 import gc
 import time
 
-def createModelForNeuralNetwork(networkArchitecture, input_shape, num_classes):
-
-    model = Sequential()
-
-    convOrPoolLayerArray = getConvOrPoolLayerArray(networkArchitecture)
-
-    for layer in convOrPoolLayerArray:
-        print(layer)
-        model.add(getConvOrPoolLayer(layer, input_shape))
-        if (hasBatchNormalization(layer)):
-          model.add(BatchNormalization())
-
-    model.add(Flatten())
-    # fully-connected - <classification>
-    classLayerArray = getClassificationLayerArray(networkArchitecture)
-    for classLayer in classLayerArray:
-        print(classLayerArray)
-        model.add(getClassificationLayer(classLayer))
-
-    # fully-connected - <softmax>
-    model.add(getSoftmaxLayer(networkArchitecture, numUnits=num_classes))
-
-    writeModelSummaryLog(model)
-    return model;
-
-#####################################
-def writeHistoryLog(history):
-    acc = "acc = "+str(history.history['acc'])
-    val_acc = "val_acc = "+str(history.history['val_acc'])
-    loss = "loss = "+str(history.history['loss'])
-    val_loss = "val_loss = "+str(history.history['val_loss'])
-    writeLog(acc)
-    writeLog(val_acc)
-    writeLog(loss)
-    writeLog(val_loss)
-    return;
-#####################################
-# 0.01 -> do 0 ate o 5th
-# 0.1 -> do 6th ate o 250th 
-# 0.01 -> do 251st ate o 375th
-# 0.001 -> do 376th ate o 400th
-def step_decay(epoch):
-    if (epoch <= 5 or (epoch > 250 and epoch <= 375)):
-        return 0.01
-    elif epoch > 5 and epoch <= 250:
-        return 0.1
-    elif epoch > 375:
-        return 0.001
-#####################################
 
 def runNeuralNetwork(networkArchitecture, data_dir, epochs=100, batch_size=32, img_width=120, img_height=120):
     writeLog("starting neuralNetwork_assuncao_outrasBases process for: " + networkArchitecture)
@@ -109,7 +57,7 @@ def runNeuralNetwork(networkArchitecture, data_dir, epochs=100, batch_size=32, i
     if K.backend() == 'tensorflow':
         K.clear_session()
 
-    model = createModelForNeuralNetwork(networkArchitecture, input_shape, num_classes)
+    model = createModelForNeuralNetwork(networkArchitecture, input_shape, numClasses=num_classes)
 
     optimizer = getLearningOptFromNetwork(networkArchitecture)
     
@@ -137,7 +85,7 @@ def runNeuralNetwork(networkArchitecture, data_dir, epochs=100, batch_size=32, i
 
     end = time.time()
     logRunTime(start, end)
-    # logModelDetails(history)
+    logHistoryLog(history)
 
     # writeLog("[INFO] evaluating network...")
     # predictions = model.predict(test_features_val, batch_size=batch_size)
@@ -163,7 +111,7 @@ def logRunTime(startTime, endTime):
     writeLog("Model took minutes to train " + str(minutes) + ':' + str(seconds).zfill(2))
     return;
 #####################################
-def writeHistoryLog(history):
+def logHistoryLog(history):
     acc = "acc = "+str(history.history['acc'])
     val_acc = "val_acc = "+str(history.history['val_acc'])
     loss = "loss = "+str(history.history['loss'])
@@ -172,17 +120,6 @@ def writeHistoryLog(history):
     writeLog(val_acc)
     writeLog(loss)
     writeLog(val_loss)
-    return;
-
-def logModelDetails(model_info):
-    writeLog('loss: ')
-    writeArray(model_info.history["loss"])
-    writeLog('val_loss: ')
-    writeArray(model_info.history["val_loss"])
-    writeLog('acc: ')
-    writeArray(model_info.history["acc"])
-    writeLog('val_acc: ')
-    writeArray(model_info.history["val_acc"])
     return;
 #####################################
 def memoryClean(train_generator,validation_generator,train_datagen,test_datagen,model):

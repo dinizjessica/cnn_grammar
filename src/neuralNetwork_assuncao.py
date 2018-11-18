@@ -1,9 +1,7 @@
 import time
 import numpy as np
+import gc
 
-from keras.models import Sequential
-from keras.layers import Conv2D, MaxPooling2D, AveragePooling2D, Dense, Flatten, BatchNormalization
-from keras.optimizers import SGD
 from keras.callbacks import LearningRateScheduler, Callback
 
 from keras.preprocessing.image import ImageDataGenerator
@@ -12,46 +10,16 @@ from sklearn.model_selection import train_test_split
 
 from keras.datasets import cifar10
 
-from writeFileHelper import writeLog, writeModelSummaryLog, writeArray
+from writeFileHelper import writeLog, writeArray
 from keras import backend as K 
 
-from grammar_helper import getConvOrPoolLayerArray, getConvOrPoolLayer, getClassificationLayerArray, getClassificationLayer, getSoftmaxLayer, getLearningOptFromNetwork, hasBatchNormalization
-
-import os
-import gc
+from grammar_helper import createModelForNeuralNetwork, getLearningOptFromNetwork, step_decay
 
 #####################################
 # pre-defined configuration
 #####################################
 
 input_shape=(32,32,3)
-
-#####################################
-
-def createModelForNeuralNetwork(networkArchitecture, input_shape):
-
-    model = Sequential()
-
-    convOrPoolLayerArray = getConvOrPoolLayerArray(networkArchitecture)
-
-    for layer in convOrPoolLayerArray:
-        print(layer)
-        model.add(getConvOrPoolLayer(layer, input_shape))
-        if (hasBatchNormalization(layer)):
-          model.add(BatchNormalization())
-
-    model.add(Flatten())
-    # fully-connected - <classification>
-    classLayerArray = getClassificationLayerArray(networkArchitecture)
-    for classLayer in classLayerArray:
-        print(classLayerArray)
-        model.add(getClassificationLayer(classLayer))
-
-    # fully-connected - <softmax>
-    model.add(getSoftmaxLayer(networkArchitecture))
-
-    writeModelSummaryLog(model)
-    return model;
 
 #####################################
 
@@ -63,22 +31,22 @@ def accuracy(test_x, test_y, model):
     accuracy = float(num_correct)/result.shape[0]
     return (accuracy * 100)
 
-#####################################
+# #####################################
 
-# 0.01 -> do 0 ate o 5th
-# 0.1 -> do 6th ate o 250th 
-# 0.01 -> do 251st ate o 375th
-# 0.001 -> do 376th ate o 400th
+# # 0.01 -> do 0 ate o 5th
+# # 0.1 -> do 6th ate o 250th 
+# # 0.01 -> do 251st ate o 375th
+# # 0.001 -> do 376th ate o 400th
 
-def step_decay(epoch):
-    if (epoch <= 5 or (epoch > 250 and epoch <= 375)):
-        return 0.01
-    elif epoch > 5 and epoch <= 250:
-        return 0.1
-    elif epoch > 375:
-        return 0.001
+# def step_decay(epoch):
+#     if (epoch <= 5 or (epoch > 250 and epoch <= 375)):
+#         return 0.01
+#     elif epoch > 5 and epoch <= 250:
+#         return 0.1
+#     elif epoch > 375:
+#         return 0.001
 
-#####################################
+# #####################################
 
 def runNeuralNetwork(networkArchitecture, epochs=400, batch_size=128, useDataAugmentation=False):
     writeLog("starting neuralNetwork_assuncao process for: " + networkArchitecture)
@@ -140,24 +108,41 @@ def runNeuralNetwork(networkArchitecture, epochs=400, batch_size=128, useDataAug
     # predictions = model.predict(test_features_val, batch_size=batch_size)
 
     end = time.time()
-    diff = int(end - start)
-    minutes, seconds = diff // 60, diff % 60
-    writeLog("Model took minutes to train " + str(minutes) + ':' + str(seconds).zfill(2))
 
-    writeLog('loss: ')
-    writeArray(model_info.history["loss"])
-    writeLog('val_loss: ')
-    writeArray(model_info.history["val_loss"])
-    writeLog('acc: ')
-    writeArray(model_info.history["acc"])
-    writeLog('val_acc: ')
-    writeArray(model_info.history["val_acc"])
+    logRunTime(start,end)
+    logHistoryLog(model_info)
 
     # compute test accuracy
     accuracyValue = accuracy(test_features_test, test_labels_test, model)
     writeLog("Accuracy on test data is: " + str(accuracyValue))
 
+    memoryClean(model)
+
     return accuracyValue;
+
+#####################################
+def memoryClean(model):
+    del model
+    gc.collect()
+    return;
+#####################################
+def logHistoryLog(history):
+    acc = "acc = "+str(history.history['acc'])
+    val_acc = "val_acc = "+str(history.history['val_acc'])
+    loss = "loss = "+str(history.history['loss'])
+    val_loss = "val_loss = "+str(history.history['val_loss'])
+    writeLog(acc)
+    writeLog(val_acc)
+    writeLog(loss)
+    writeLog(val_loss)
+    return;
+#####################################
+def logRunTime(startTime, endTime):
+    diff = int(endTime - startTime  )
+    minutes, seconds = diff // 60, diff % 60
+    writeLog("Model took minutes to train " + str(minutes) + ':' + str(seconds).zfill(2))
+    return;
+#####################################
 
 ####################################
 # tests

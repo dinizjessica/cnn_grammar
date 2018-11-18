@@ -1,10 +1,44 @@
 import re
 import os
 
-from keras.layers import Conv2D, MaxPooling2D, AveragePooling2D, Dense, Merge, BatchNormalization, Concatenate
+from keras.layers import Conv2D, MaxPooling2D, AveragePooling2D
+from keras.layers import Dense, Merge, BatchNormalization, Concatenate, Flatten
 from keras.optimizers import SGD
 from keras.models import Sequential
 
+from writeFileHelper import writeModelSummaryLog
+
+# this method can have an optional parameter called numClasses that will be used when the algorithm runs with different databases than cifar (having diferent number of classes)
+def createModelForNeuralNetwork(networkArchitecture, input_shape, *positional_parameters, **keyword_parameters):
+
+    model = Sequential()
+
+    convOrPoolLayerArray = getConvOrPoolLayerArray(networkArchitecture)
+
+    for layer in convOrPoolLayerArray:
+        print(layer)
+        model.add(getConvOrPoolLayer(layer, input_shape))
+        if (hasBatchNormalization(layer)):
+          model.add(BatchNormalization())
+
+    model.add(Flatten())
+    # fully-connected - <classification>
+    classLayerArray = getClassificationLayerArray(networkArchitecture)
+    for classLayer in classLayerArray:
+        print(classLayerArray)
+        model.add(getClassificationLayer(classLayer))
+
+    # fully-connected - <softmax>
+    if ('numClasses' in keyword_parameters):
+    	model.add(getSoftmaxLayer(networkArchitecture, numUnits=keyword_parameters['numClasses']))
+    else:
+    	model.add(getSoftmaxLayer(networkArchitecture))
+
+    writeModelSummaryLog(model)
+    return model;
+
+
+##########################################################################
 
 def getConvOrPoolLayerArray(redeString):
 	redeArray = splitRede(redeString)
