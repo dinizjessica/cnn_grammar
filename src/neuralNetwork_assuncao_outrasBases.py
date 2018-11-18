@@ -5,7 +5,7 @@ from keras import backend as K
 
 from neuralNetworkHelper import getNumberOfClasses, getQuantityOfFilesInAFolder
 from writeFileHelper import writeLog
-from grammar_helper import createModelForNeuralNetwork, getLearningOptFromNetwork
+from grammar_helper import createModelForNeuralNetwork, getLearningOptFromNetwork, step_decay
 
 import os
 import gc
