@@ -7,12 +7,12 @@ from neuralNetwork_assuncao import runNeuralNetwork as baseCifar
 # select the data base to run the algorithm; it can be either 'cifar' or 'outras'
 base = 'outras'
 
-epochs = 5#400
+epochs = 400
 batch_size = 32#128
 img_width, img_height = 120, 120 # used during tests for melanoma dataset 
 
 # if testing with another database but cifar, inform the dataset diretory
-data_dir = '/Users/jdiniz/Documents/android/visao computacional/mestrado/dataset2test'
+data_dir = '/mnt/E0A05FEAA05FC5A6/Bases/melanoma/jessica/data/data'
 
 #####################################
 
