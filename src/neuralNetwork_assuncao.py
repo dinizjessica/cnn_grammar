@@ -23,8 +23,7 @@ import gc
 #####################################
 # pre-defined configuration
 #####################################
-epochs = 400
-batch_size = 128
+
 input_shape=(32,32,3)
 
 #####################################
@@ -81,8 +80,8 @@ def step_decay(epoch):
 
 #####################################
 
-def runNeuralNetwork(networkArchitecture, useDataAugmentation=False):
-    writeLog("starting process for: " + networkArchitecture)
+def runNeuralNetwork(networkArchitecture, epochs=400, batch_size=128, useDataAugmentation=False):
+    writeLog("starting neuralNetwork_assuncao process for: " + networkArchitecture)
     # load cifar data
     (train_features, train_labels), (test_features, test_labels) = cifar10.load_data()
     # split the data on test (test_features_test) and validation (test_features_val)

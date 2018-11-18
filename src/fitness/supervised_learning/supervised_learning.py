@@ -9,7 +9,9 @@ from utilities.fitness.optimize_constants import optimize_constants
 from fitness.base_ff_classes.base_ff import base_ff
 
 # from neuralNetworkCifar import runNeuralNetworkCifar
-from neuralNetwork_assuncao import runNeuralNetwork
+# from neuralNetwork_assuncao import runNeuralNetwork
+from algorithmSelector import runNeuralNetwork
+
 from representation.individual import generate_new_genome_and_phenotype
 
 class supervised_learning(base_ff):

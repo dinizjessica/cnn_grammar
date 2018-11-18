@@ -32,9 +32,14 @@ def getClassificationLayerArray(redeString):
 def getClassificationLayer(classificationStr):
 	return getFCLayer(classificationStr)
 
-def getSoftmaxLayer(redeString):
+# this method can have an optional parameter called numUnits that will be used when the algorithm runs with different databases than cifar (having diferent number of classes)
+def getSoftmaxLayer(redeString, *positional_parameters, **keyword_parameters):
 	softmaxStr = getSoftmaxLayerString(redeString)
-	return getFCLayer(softmaxStr)
+
+	if ('numUnits' in keyword_parameters):
+		return getFCLayer(softmaxStr, numUnits=keyword_parameters['numUnits'])
+	else: 
+		return getFCLayer(softmaxStr)
 
 def getLearningOptFromNetwork(redeString):
 	learningString = getLearningString(redeString)
@@ -93,10 +98,14 @@ def getPoolLayer(poolString, input_shape):
 	elif poolType == 'pool-avg':
 		return AveragePooling2D(pool_size=(2, 2), strides=stride, padding=padding, input_shape=input_shape)
 
-def getFCLayer(fcString): # classification and softmax
+# this method can have an optional parameter called numUnits that will be used when the algorithm runs with different databases than cifar (having diferent number of classes)
+def getFCLayer(fcString, *positional_parameters, **keyword_parameters): # classification and softmax
 	# (layer:fc act:relu num-units:2048 bias:True) 
 	# keras.layers.Dense(units, activation=None, use_bias=True, kernel_initializer='glorot_uniform', bias_initializer='zeros', kernel_regularizer=None, bias_regularizer=None, activity_regularizer=None, kernel_constraint=None, bias_constraint=None)
-	numUnits = int(getValueFrom(fcString, 'num-units'))
+	if ('numUnits' in keyword_parameters):
+		numUnits = keyword_parameters['numUnits']
+	else:
+		numUnits = int(getValueFrom(fcString, 'num-units'))
 	activation = getValueFrom(fcString, 'act')
 	bias = True if getValueFrom(fcString, 'bias') == 'True' else False
 

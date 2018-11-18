@@ -5,7 +5,9 @@ from algorithm.parameters import params
 
 # from neuralNetworkCifar import runNeuralNetworkCifar
 # from neuralNetwork_any_dataset import runNeuralNetwork
-from neuralNetwork_assuncao import runNeuralNetwork
+# from neuralNetwork_assuncao import runNeuralNetwork
+from algorithmSelector import runNeuralNetwork
+
 from writeFileHelper import writeLog
 from representation.tree import Tree
 from representation.derivation import generate_tree, pi_grow
