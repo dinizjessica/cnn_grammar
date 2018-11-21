@@ -1,5 +1,5 @@
 
-<network-architecture>	::= <pre-pre-features> (<pre-classification>) (<softmax>) (<learning>)
+<network-architecture>	::= <pre-features> (<pre-classification>) (<softmax>) (<learning>)
 
 <pre-pre-features>		::= <pre-features> | <pre-features> <pre-features> | <pre-features> <pre-features> <pre-features>
 
