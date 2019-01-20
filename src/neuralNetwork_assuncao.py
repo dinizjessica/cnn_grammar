@@ -102,7 +102,7 @@ def runNeuralNetwork(networkArchitecture, epochs=400, batch_size=128, useDataAug
                                epochs=epochs, 
                                validation_data = (test_features_val, test_labels_val), 
                                callbacks=callbacks_list,
-                               verbose=0)
+                               verbose=1)
     
     writeLog("[INFO] evaluating network...")
     # predictions = model.predict(test_features_val, batch_size=batch_size)
