@@ -2,10 +2,10 @@ import os
 import glob
 
 from nilearn import plotting
-%matplotlib inline
-import matplotlib.pyplot as plt
-import seaborn as sns
-sns.set(style="darkgrid")
+#%matplotlib inline
+#import matplotlib.pyplot as plt
+#import seaborn as sns
+#sns.set(style="darkgrid")
 
 from nilearn.image import mean_img
 from nilearn.plotting import plot_anat
@@ -30,14 +30,14 @@ from grammar_helper import createModelForNeuralNetwork, getLearningOptFromNetwor
 
 
 # data path
-data_folder_path = './acerta_whole/classification/*.nii'
+data_folder_path = '/media/gpin/datasets/AMBAC/acerta_whole/classification/*.nii'
 data_paths = glob.glob(data_folder_path) # list of each nii path as string
 
 # mask path
-data_mask_path = './bkp_acerta/mask_group_whole.nii'
+data_mask_path = '/media/gpin/datasets/AMBAC/acerta_whole/mask_group_whole.nii'
 
 #Get labels
-data_classification_path = './acerta_whole/y.csv'
+data_classification_path = '/media/gpin/datasets/AMBAC/acerta_whole/y.csv'
 labels = pd.read_csv(data_classification_path, sep=",")
 target = labels['Label']
 
@@ -70,7 +70,7 @@ def load_mask_file(data_mask_path):
 
 mask = load_mask_file(data_mask_path)
 
-print(len(data_all))
+#print(len(data_all))
 
 #Preprocessing
 #Apply the mask to all the data files
@@ -81,23 +81,23 @@ def image_preprocessing(imgs_to_apply_mask, mask):
         masked_imgs.append(np.array(img * mask))
 
     images = np.asarray(masked_imgs)
-    print(images.shape)
+    #print(images.shape)
     return images
 
 images = image_preprocessing(data_all, mask)
 
 #Next, rescale the data with using max-min normalisation technique
-def apply_max_min_normalization(images):
-    ma = np.max(images)
-    mi = np.min(images)
-    print(ma, mi)
-    normalized_imgs = (images - mi) / (ma - mi)
-    return normalized_imgs
+def apply_zscore(images):
+    mean = np.mean(images)
+    std = np.std(images)
+    #print(ma, mi)
+    zscored_imgs = (images - mean) / (std)
+    return zscored_imgs
 
-images = apply_max_min_normalization(images)
+images = apply_zscore(images)
 
 #Let's verify the minimum and maximum value of the data which should be 0.0 and 1.0 after rescaling it!
-print(np.min(images), np.max(images))
+#print(np.min(images), np.max(images))
 
 
 
@@ -123,7 +123,7 @@ def split_the_data_into_training_and_test_sets(images, train_indices, test_indic
     print(X_train.shape, X_test.shape)
     return X_train, X_test
 
-X_train, X_test = split_the_data_into_training_and_test_sets(images)
+X_train, X_test = split_the_data_into_training_and_test_sets(images, train_indices, test_indices)
 
 # Create outcome variable
 y_train = target[train_indices]
@@ -144,53 +144,52 @@ print(data_shape)
 kernel_size = (3, 3)
 
 # Specify number of output categories
-n_classes = 2
+#n_classes = 2
 
 # Specify number of filtersper layer
 filters = 16
 
 
+#model = createModelForNeuralNetwork('networkArchitecture', data_shape)
 
-model = createModelForNeuralNetwork('networkArchitecture', data_shape)
+k.clear_session()
+model = Sequential()
 
-# k.clear_session()
-# model = Sequential()
+model.add(Conv2D(filters, kernel_size, activation='relu', input_shape=data_shape))
+model.add(BatchNormalization())
+model.add(MaxPooling2D())
 #
-# model.add(Conv2D(filters, kernel_size, activation='relu', input_shape=data_shape))
-# model.add(BatchNormalization())
-# model.add(MaxPooling2D())
-#
-# model.add(Conv2D(filters * 2, kernel_size, activation='relu'))
-# model.add(BatchNormalization())
-# model.add(MaxPooling2D())
-#
-# model.add(Conv2D(filters * 4, kernel_size, activation='relu'))
-# model.add(BatchNormalization())
-# model.add(MaxPooling2D())
-#
-# model.add(Flatten())
-#
-# model.add(Dense(256, activation='relu'))
-# model.add(Dropout(0.5))
-#
-# model.add(Dense(512, activation='relu'))
-# model.add(Dropout(0.5))
-#
-# model.add(Dense(1, activation='sigmoid'))
+model.add(Conv2D(filters * 2, kernel_size, activation='relu'))
+model.add(BatchNormalization())
+model.add(MaxPooling2D())
 
-# optimizer
-# learning_rate = 1e-5
-# adam = Adam(lr=learning_rate)
-# sgd = SGD(lr=learning_rate)
+model.add(Conv2D(filters * 4, kernel_size, activation='relu'))
+model.add(BatchNormalization())
+model.add(MaxPooling2D())
 #
-optimizer = getLearningOptFromNetwork('networkArchitecture')
+model.add(Flatten())
+#
+model.add(Dense(256, activation='relu'))
+model.add(Dropout(0.5))
+#
+model.add(Dense(512, activation='relu'))
+model.add(Dropout(0.5))
+#
+model.add(Dense(1, activation='sigmoid'))
+
+#optimizer
+learning_rate = 1e-5
+adam = Adam(lr=learning_rate)
+sgd = SGD(lr=learning_rate)
+#
+#optimizer = getLearningOptFromNetwork('networkArchitecture')
 loss = 'binary_crossentropy'
 
-model.compile(optimizer=optimizer, loss=loss, metrics=['accuracy'])
+#model.compile(optimizer=optimizer, loss=loss, metrics=['accuracy'])
 
-# model.compile(loss='binary_crossentropy',
-#               optimizer=adam, # swap out for sgd
-#               metrics=['accuracy'])
+model.compile(loss=loss,
+              optimizer=adam, # swap out for sgd
+              metrics=['accuracy'])
 
 model.summary()
 
@@ -212,16 +211,22 @@ batch_size = 16   # Increasing this value might speed up fitting
 
 
 # TensorBoard callback
-LOG_DIRECTORY_ROOT = 'logdir'
-now = datetime.utcnow().strftime("%Y%m%d%H%M%S")
-log_dir = "{}/run-{}/".format(LOG_DIRECTORY_ROOT, now)
-tensorboard = TensorBoard(log_dir=log_dir, write_graph=True, write_images=True)
+#LOG_DIRECTORY_ROOT = 'logdir'
+#now = datetime.utcnow().strftime("%Y%m%d%H%M%S")
+#log_dir = "{}/run-{}/".format(LOG_DIRECTORY_ROOT, now)
+#tensorboard = TensorBoard(log_dir=log_dir, write_graph=True, write_images=True)
 
 # Place the callbacks in a list
-callbacks = [tensorboard]
+#callbacks = [tensorboard]
 
 
 
 # Let's test the model:
 
-%time fit = model.fit(X_train, y_train, epochs=nEpochs, batch_size=batch_size)
+fit = model.fit(X_train, y_train, epochs=nEpochs, batch_size=batch_size)
+
+
+#Evaluating the model
+evaluation = model.evaluate(X_test, y_test)
+print('Loss in Test set:        %.02f' % (evaluation[0]))
+print('Accuracy in Test set:    %.02f' % (evaluation[1] * 100)) 
