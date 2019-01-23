@@ -45,6 +45,19 @@ x_coord = 60
 y_coord = 73
 z_coord = 61
 
+# Specify number of filtersper layer
+filters = 16
+
+# Specify shape of convolution kernel
+kernel_size = (3, 3)
+
+# Specify number of output categories
+#n_classes = 2
+
+ind = '(layer:pool-max kernel-size:1 stride:2 padding:valid) (layer:conv num-filters:256 filter-shape:4 stride:1 padding:valid act:relu bias:True batch-normalisation:False merge-input:False) (layer:conv num-filters:64 filter-shape:2 stride:3 padding:same act:linear bias:False batch-normalisation:True merge-input:True) (layer:pool-max kernel-size:1 stride:2 padding:valid) (layer:conv num-filters:32 filter-shape:1 stride:3 padding:valid act:relu bias:True batch-normalisation:False merge-input:False) (layer:conv num-filters:32 filter-shape:5 stride:3 padding:same act:linear bias:True batch-normalisation:False merge-input:False) (layer:conv num-filters:128 filter-shape:4 stride:1 padding:same act:relu bias:False batch-normalisation:False merge-input:False) (layer:conv num-filters:32 filter-shape:2 stride:1 padding:same act:relu bias:False batch-normalisation:False merge-input:True) (layer:conv num-filters:256 filter-shape:1 stride:2 padding:valid act:relu bias:False batch-normalisation:False merge-input:True) (layer:conv num-filters:128 filter-shape:4 stride:2 padding:same act:sigmoid bias:True batch-normalisation:False merge-input:False) (layer:conv num-filters:256 filter-shape:1 stride:1 padding:same act:sigmoid bias:False batch-normalisation:False merge-input:True) (layer:fc act:sigmoid num-units:128 bias:True) (layer:fc act:softmax num-units:10 bias:True) (learning:gradient-descent learning-rate:0.01)'
+networkArchitecture = ind
+
+
 
 def load_data_from_nii_files(file_paths):
     loaded_images = []
@@ -132,64 +145,54 @@ print(y_train.shape)
 print(y_test)
 
 
-
-
 # Create a sequential model
 
 # Get shape of input data
 data_shape = tuple(X_train.shape[1:])
 print(data_shape)
 
-# Specify shape of convolution kernel
-kernel_size = (3, 3)
-
-# Specify number of output categories
-#n_classes = 2
-
-# Specify number of filtersper layer
-filters = 16
 
 
-#model = createModelForNeuralNetwork('networkArchitecture', data_shape)
+model = createModelForNeuralNetwork(networkArchitecture, data_shape)
 
 k.clear_session()
-model = Sequential()
-
-model.add(Conv2D(filters, kernel_size, activation='relu', input_shape=data_shape))
-model.add(BatchNormalization())
-model.add(MaxPooling2D())
+# model = Sequential()
 #
-model.add(Conv2D(filters * 2, kernel_size, activation='relu'))
-model.add(BatchNormalization())
-model.add(MaxPooling2D())
-
-model.add(Conv2D(filters * 4, kernel_size, activation='relu'))
-model.add(BatchNormalization())
-model.add(MaxPooling2D())
+# model.add(Conv2D(filters, kernel_size, activation='relu', input_shape=data_shape))
+# model.add(BatchNormalization())
+# model.add(MaxPooling2D())
 #
-model.add(Flatten())
+# model.add(Conv2D(filters * 2, kernel_size, activation='relu'))
+# model.add(BatchNormalization())
+# model.add(MaxPooling2D())
 #
-model.add(Dense(256, activation='relu'))
-model.add(Dropout(0.5))
+# model.add(Conv2D(filters * 4, kernel_size, activation='relu'))
+# model.add(BatchNormalization())
+# model.add(MaxPooling2D())
 #
-model.add(Dense(512, activation='relu'))
-model.add(Dropout(0.5))
+# model.add(Flatten())
 #
-model.add(Dense(1, activation='sigmoid'))
+# model.add(Dense(256, activation='relu'))
+# model.add(Dropout(0.5))
+#
+# model.add(Dense(512, activation='relu'))
+# model.add(Dropout(0.5))
+#
+# model.add(Dense(1, activation='sigmoid'))
 
 #optimizer
-learning_rate = 1e-5
-adam = Adam(lr=learning_rate)
-sgd = SGD(lr=learning_rate)
+# learning_rate = 1e-5
+# adam = Adam(lr=learning_rate)
+# sgd = SGD(lr=learning_rate)
 #
-#optimizer = getLearningOptFromNetwork('networkArchitecture')
+optimizer = getLearningOptFromNetwork(networkArchitecture)
 loss = 'binary_crossentropy'
 
-#model.compile(optimizer=optimizer, loss=loss, metrics=['accuracy'])
+model.compile(optimizer=optimizer, loss=loss, metrics=['accuracy'])
 
-model.compile(loss=loss,
-              optimizer=adam, # swap out for sgd
-              metrics=['accuracy'])
+# model.compile(loss=loss,
+#               optimizer=adam, # swap out for sgd
+#               metrics=['accuracy'])
 
 model.summary()
 
