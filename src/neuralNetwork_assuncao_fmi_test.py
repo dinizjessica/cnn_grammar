@@ -54,7 +54,7 @@ kernel_size = (3, 3)
 # Specify number of output categories
 #n_classes = 2
 
-ind = '(layer:pool-max kernel-size:1 stride:2 padding:valid) (layer:conv num-filters:256 filter-shape:4 stride:1 padding:valid act:relu bias:True batch-normalisation:False merge-input:False) (layer:conv num-filters:64 filter-shape:2 stride:3 padding:same act:linear bias:False batch-normalisation:True merge-input:True) (layer:pool-max kernel-size:1 stride:2 padding:valid) (layer:conv num-filters:32 filter-shape:1 stride:3 padding:valid act:relu bias:True batch-normalisation:False merge-input:False) (layer:conv num-filters:32 filter-shape:5 stride:3 padding:same act:linear bias:True batch-normalisation:False merge-input:False) (layer:conv num-filters:128 filter-shape:4 stride:1 padding:same act:relu bias:False batch-normalisation:False merge-input:False) (layer:conv num-filters:32 filter-shape:2 stride:1 padding:same act:relu bias:False batch-normalisation:False merge-input:True) (layer:conv num-filters:256 filter-shape:1 stride:2 padding:valid act:relu bias:False batch-normalisation:False merge-input:True) (layer:conv num-filters:128 filter-shape:4 stride:2 padding:same act:sigmoid bias:True batch-normalisation:False merge-input:False) (layer:conv num-filters:256 filter-shape:1 stride:1 padding:same act:sigmoid bias:False batch-normalisation:False merge-input:True) (layer:fc act:sigmoid num-units:128 bias:True) (layer:fc act:softmax num-units:10 bias:True) (learning:gradient-descent learning-rate:0.01)'
+ind = '(layer:conv num-filters:16 filter-shape:3 stride:1 padding:valid act:relu bias:False batch-normalisation:True merge-input:False) (layer:pool-max kernel-size:1 stride:2 padding:valid) (layer:conv num-filters:32 filter-shape:3 stride:1 padding:valid act:relu bias:True batch-normalisation:True merge-input:False) (layer:pool-max kernel-size:1 stride:2 padding:valid) (layer:conv num-filters:64 filter-shape:3 stride:1 padding:same act:relu bias:True batch-normalisation:True merge-input:False) (layer:pool-max kernel-size:1 stride:2 padding:valid) (layer:fc act:relu num-units:256 bias:True) (layer:fc act:relu num-units:512 bias:True) (layer:fc act:relu num-units:64 bias:True) (layer:fc act:softmax num-units:2 bias:True) (learning:gradient-descent learning-rate:0.01)'
 networkArchitecture = ind
 
 
@@ -99,7 +99,7 @@ def image_preprocessing(imgs_to_apply_mask, mask):
 
 images = image_preprocessing(data_all, mask)
 
-#Next, rescale the data with using max-min normalisation technique
+#Next, rescale the data with using zscore standardization technique
 def apply_zscore(images):
     mean = np.mean(images)
     std = np.std(images)
@@ -144,6 +144,12 @@ y_test  = target[test_indices]
 print(y_train.shape)
 print(y_test)
 
+#We need to reformat the shape of our outcome variables, y_train and y_test, because Keras needs the labels as a 2D array.
+#Keras provides a function to do this:
+
+from keras.utils import to_categorical
+y_train = to_categorical(y_train)
+y_test = to_categorical(y_test)
 
 # Create a sequential model
 
@@ -181,18 +187,18 @@ k.clear_session()
 # model.add(Dense(1, activation='sigmoid'))
 
 #optimizer
-# learning_rate = 1e-5
-# adam = Adam(lr=learning_rate)
+learning_rate = 1e-5
+adam = Adam(lr=learning_rate)
 # sgd = SGD(lr=learning_rate)
 #
 optimizer = getLearningOptFromNetwork(networkArchitecture)
 loss = 'binary_crossentropy'
 
-model.compile(optimizer=optimizer, loss=loss, metrics=['accuracy'])
+#model.compile(optimizer=optimizer, loss=loss, metrics=['accuracy'])
 
-# model.compile(loss=loss,
-#               optimizer=adam, # swap out for sgd
-#               metrics=['accuracy'])
+model.compile(loss=loss,
+              optimizer=adam, # swap out for sgd
+              metrics=['accuracy'])
 
 model.summary()
 
