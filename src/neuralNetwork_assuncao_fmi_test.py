@@ -1,30 +1,30 @@
 import os
 import glob
 
-from nilearn import plotting
+#from nilearn import plotting
 #%matplotlib inline
 #import matplotlib.pyplot as plt
 #import seaborn as sns
 #sns.set(style="darkgrid")
 
-from nilearn.image import mean_img
-from nilearn.plotting import plot_anat
+#from nilearn.image import mean_img
+#from nilearn.plotting import plot_anat
 
 import nibabel as nib
 
 import numpy as np
 import pandas as pd
 
-import tensorflow as tf
-from keras.callbacks import TensorBoard
-from keras.models import Model, Sequential
+#import tensorflow as tf
+#from keras.callbacks import TensorBoard
+#from keras.models import Model, Sequential
 
-from keras.layers import Input, Dense, Flatten, Dropout, Conv2D, MaxPooling2D, BatchNormalization
-from keras.optimizers import Adam, SGD, RMSprop
+#from keras.layers import Input, Dense, Flatten, Dropout, Conv2D, MaxPooling2D, BatchNormalization
+#from keras.optimizers import Adam, SGD, RMSprop
 
-from keras import backend as k
+#from keras import backend as k
 
-from datetime import datetime
+#from datetime import datetime
 
 from grammar_helper import createModelForNeuralNetwork, getLearningOptFromNetwork
 
@@ -142,7 +142,7 @@ X_train, X_test = split_the_data_into_training_and_test_sets(images, train_indic
 y_train = target[train_indices]
 y_test  = target[test_indices]
 print(y_train.shape)
-print(y_test)
+print(y_test.shape)
 
 #We need to reformat the shape of our outcome variables, y_train and y_test, because Keras needs the labels as a 2D array.
 #Keras provides a function to do this:
@@ -150,6 +150,9 @@ print(y_test)
 from keras.utils import to_categorical
 y_train = to_categorical(y_train)
 y_test = to_categorical(y_test)
+
+print(y_train.shape)
+print(y_test.shape)
 
 # Create a sequential model
 
@@ -161,44 +164,43 @@ print(data_shape)
 
 model = createModelForNeuralNetwork(networkArchitecture, data_shape)
 
-k.clear_session()
-# model = Sequential()
+#k.clear_session()
+#model = Sequential()
 #
-# model.add(Conv2D(filters, kernel_size, activation='relu', input_shape=data_shape))
-# model.add(BatchNormalization())
-# model.add(MaxPooling2D())
+#model.add(Conv2D(filters, kernel_size, activation='relu', input_shape=data_shape))
+#model.add(BatchNormalization())
+#model.add(MaxPooling2D())
 #
-# model.add(Conv2D(filters * 2, kernel_size, activation='relu'))
-# model.add(BatchNormalization())
-# model.add(MaxPooling2D())
+#model.add(Conv2D(filters * 2, kernel_size, activation='relu'))
+#model.add(BatchNormalization())
+#model.add(MaxPooling2D())
 #
-# model.add(Conv2D(filters * 4, kernel_size, activation='relu'))
-# model.add(BatchNormalization())
-# model.add(MaxPooling2D())
+#model.add(Conv2D(filters * 4, kernel_size, activation='relu'))
+#model.add(BatchNormalization())
+#model.add(MaxPooling2D())
 #
-# model.add(Flatten())
+#model.add(Flatten())
 #
-# model.add(Dense(256, activation='relu'))
-# model.add(Dropout(0.5))
+#model.add(Dense(256, activation='relu'))
+#model.add(Dropout(0.5))
 #
-# model.add(Dense(512, activation='relu'))
-# model.add(Dropout(0.5))
+#model.add(Dense(512, activation='relu'))
+#model.add(Dropout(0.5))
 #
-# model.add(Dense(1, activation='sigmoid'))
+#model.add(Dense(2, activation='softmax'))
 
 #optimizer
-learning_rate = 1e-5
-adam = Adam(lr=learning_rate)
-# sgd = SGD(lr=learning_rate)
+#learning_rate = 1e-5
+#adam = Adam(lr=learning_rate)
+#sgd = SGD(lr=learning_rate)
 #
 optimizer = getLearningOptFromNetwork(networkArchitecture)
-loss = 'binary_crossentropy'
+loss = 'categorical_crossentropy'
 
-#model.compile(optimizer=optimizer, loss=loss, metrics=['accuracy'])
+model.compile(optimizer=optimizer, loss=loss, metrics=['accuracy'])
 
-model.compile(loss=loss,
-              optimizer=adam, # swap out for sgd
-              metrics=['accuracy'])
+#model.compile(loss=loss, optimizer=adam, metrics=['accuracy'])
+#print("passou do compile")
 
 model.summary()
 
