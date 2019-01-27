@@ -1,5 +1,6 @@
 from neuralNetwork_assuncao_outrasBases import runNeuralNetwork as outrasBases
 from neuralNetwork_assuncao import runNeuralNetwork as baseCifar
+from neuralNetwork_assuncao_fmri import runNeuralNetwork as baseFMRI
 
 #####################################
 # pre-defined configuration
@@ -19,6 +20,8 @@ data_dir = '/mnt/E0A05FEAA05FC5A6/Bases/melanoma/jessica/data/data'
 def runNeuralNetwork(networkArchitecture):
 	if base == 'cifar':
 		return baseCifar(networkArchitecture, epochs, batch_size)
+	elif base == 'fmri':
+		return baseFMRI(networkArchitecture)
 	elif base == 'outras':
 		return outrasBases(networkArchitecture, 
 						   data_dir, 
