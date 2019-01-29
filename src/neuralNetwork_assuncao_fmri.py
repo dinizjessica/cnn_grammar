@@ -7,6 +7,7 @@ import numpy as np
 import pandas as pd
 
 from keras.utils import to_categorical
+from keras import backend as k
 
 from grammar_helper import createModelForNeuralNetwork, getLearningOptFromNetwork
 from writeFileHelper import writeLog
@@ -114,6 +115,7 @@ def reshape_outcome_variables_to_categorical(y_train_as_3D, y_test_as_3D):
 
 def memory_clean(model):
     del model
+    k.clear_session()
     gc.collect()
     return
 
@@ -162,7 +164,7 @@ def runNeuralNetwork(networkArchitecture):
     y_train, y_test = reshape_outcome_variables_to_categorical(y_train_as_3D, y_test_as_3D)
 
     data_shape = tuple(X_train.shape[1:])
-
+    k.clear_session()
     model = createModelForNeuralNetwork(networkArchitecture, data_shape)
 
     optimizer = getLearningOptFromNetwork(networkArchitecture)
@@ -174,7 +176,7 @@ def runNeuralNetwork(networkArchitecture):
     start = time.time()
 
     # Let's test the model:
-    model_info = model.fit(X_train, y_train, epochs=epochs, batch_size=batch_size)
+    model_info = model.fit(X_train, y_train, validation_data=(X_test, y_test), epochs=epochs, batch_size=batch_size)
     evaluation = model.evaluate(X_test, y_test)
 
     end = time.time()
