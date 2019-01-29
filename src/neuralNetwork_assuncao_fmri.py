@@ -5,9 +5,11 @@ import gc
 import nibabel as nib
 import numpy as np
 import pandas as pd
+import matplotlib.pyplot as plt
 
-from keras.utils import to_categorical
 from keras import backend as k
+from keras.utils import to_categorical
+from keras.callbacks import LearningRateScheduler
 
 from grammar_helper import createModelForNeuralNetwork, getLearningOptFromNetwork
 from writeFileHelper import writeLog
@@ -139,11 +141,46 @@ def log_execution_time(start_time, end_time):
     return
 
 
+def show_activation(layer_name, model, X_train):
+    # Aggregate the layers
+    layer_dict = dict([(layer.name, layer) for layer in model.layers])
+
+    layer_output = layer_dict[layer_name].output
+
+    fn = k.function([model.input], [layer_output])
+
+    inp = X_train[0:1]
+
+    this_hidden = fn([inp])[0]
+
+    # plot the activations, 8 filters per row
+    plt.figure(figsize=(16, 8))
+    nFilters = this_hidden.shape[-1]
+    nColumn = 8 if nFilters >= 8 else nFilters
+    for i in range(nFilters):
+        plt.subplot(nFilters / nColumn, nColumn, i + 1)
+        plt.imshow(this_hidden[0, :, :, i], cmap='magma', interpolation='nearest')
+        plt.axis('off')
+    return
+
+
+# 0.01 -> do 0 ate o 5th
+# 0.1 -> do 6th ate o 250th
+# 0.01 -> do 251st ate o 375th
+# 0.001 -> do 376th ate o 400th
+def step_decay(epoch):
+    if (epoch <= 5 or (epoch > 250 and epoch <= 375)):
+        return 0.01
+    elif epoch > 5 and epoch <= 250:
+        return 0.1
+    elif epoch > 375:
+        return 0.001
+
 ##################################################
 # process
 ##################################################
 
-def runNeuralNetwork(networkArchitecture):
+def runNeuralNetwork(networkArchitecture, use_step_decay=False):
     writeLog("starting neuralNetwork_assuncao process for: " + networkArchitecture)
 
     # load data
@@ -171,12 +208,21 @@ def runNeuralNetwork(networkArchitecture):
     loss = 'categorical_crossentropy'
 
     model.compile(optimizer=optimizer, loss=loss, metrics=['accuracy'])
+    # import pdb; pdb.set_trace() # debug
 
     # train the model
     start = time.time()
 
     # Let's test the model:
-    model_info = model.fit(X_train, y_train, validation_data=(X_test, y_test), epochs=epochs, batch_size=batch_size)
+    if (use_step_decay):
+        # alterar o learning rate em determinados pontos
+        lrate = LearningRateScheduler(step_decay)
+        callbacks_list = [lrate]
+
+        model_info = model.fit(X_train, y_train, validation_data=(X_test, y_test), epochs=epochs, batch_size=batch_size, callbacks=callbacks_list)
+    else:
+        model_info = model.fit(X_train, y_train, validation_data=(X_test, y_test), epochs=epochs, batch_size=batch_size)
+
     evaluation = model.evaluate(X_test, y_test)
 
     end = time.time()
