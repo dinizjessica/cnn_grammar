@@ -5,29 +5,37 @@ import gc
 import nibabel as nib
 import numpy as np
 import pandas as pd
-import matplotlib.pyplot as plt
+# import matplotlib.pyplot as plt
 
 from keras import backend as k
 from keras.utils import to_categorical
 from keras.callbacks import LearningRateScheduler
-from keras.optimizers import Adam, SGD, RMSprop
+# from keras.optimizers import Adam, SGD, RMSprop
 
 from grammar_helper import createModelForNeuralNetwork, getLearningOptFromNetwork
 from writeFileHelper import writeLog
 
+from os import path
+
 ##################################################
 # pre-defined configuration
 ##################################################
+
+# data set folder path
+fmri_dataset_path = path.abspath(path.join(__file__, "../../datasets/fmri/"))
+
 # data path
-data_folder_path = '/media/gpin/datasets/AMBAC/data_aug/*.nii'
+# data_folder_path = '/media/gpin/datasets/AMBAC/data_aug/*.nii'
+data_folder_path = fmri_dataset_path+'/whole/*.nii'
 data_paths = glob.glob(data_folder_path) # list of each nii path as string
 
 # mask path
 #data_mask_path = '/media/gpin/datasets/AMBAC/acerta_whole/mask_group_whole.nii'
 
 # labels
-data_classification_path = '/media/gpin/datasets/AMBAC/y_aug_backup.csv'
-labels = pd.read_csv(data_classification_path, sep=";")
+# data_classification_path = '/media/gpin/datasets/AMBAC/y_aug_backup.csv'
+data_classification_path = fmri_dataset_path+'/y.csv'
+labels = pd.read_csv(data_classification_path, sep=",")
 
 input_shape = (60, 73, 61)
 
@@ -116,7 +124,7 @@ def split_data_into_training_and_test_sets(images, train_indexes, test_indexes):
 
 
 def create_outcome_variables(label_list, train_indexes, test_indexes):
-    target = label_list['Labels']
+    target = label_list['Label']
     y_train = target[train_indexes]
     y_test  = target[test_indexes]
     return y_train, y_test
@@ -156,27 +164,27 @@ def log_execution_time(start_time, end_time):
     return
 
 
-def show_activation(layer_name, model, X_train):
-    # Aggregate the layers
-    layer_dict = dict([(layer.name, layer) for layer in model.layers])
-
-    layer_output = layer_dict[layer_name].output
-
-    fn = k.function([model.input], [layer_output])
-
-    inp = X_train[0:1]
-
-    this_hidden = fn([inp])[0]
-
-    # plot the activations, 8 filters per row
-    plt.figure(figsize=(16, 8))
-    nFilters = this_hidden.shape[-1]
-    nColumn = 8 if nFilters >= 8 else nFilters
-    for i in range(nFilters):
-        plt.subplot(nFilters / nColumn, nColumn, i + 1)
-        plt.imshow(this_hidden[0, :, :, i], cmap='magma', interpolation='nearest')
-        plt.axis('off')
-    return
+# def show_activation(layer_name, model, X_train):
+#     # Aggregate the layers
+#     layer_dict = dict([(layer.name, layer) for layer in model.layers])
+#
+#     layer_output = layer_dict[layer_name].output
+#
+#     fn = k.function([model.input], [layer_output])
+#
+#     inp = X_train[0:1]
+#
+#     this_hidden = fn([inp])[0]
+#
+#     # plot the activations, 8 filters per row
+#     plt.figure(figsize=(16, 8))
+#     nFilters = this_hidden.shape[-1]
+#     nColumn = 8 if nFilters >= 8 else nFilters
+#     for i in range(nFilters):
+#         plt.subplot(nFilters / nColumn, nColumn, i + 1)
+#         plt.imshow(this_hidden[0, :, :, i], cmap='magma', interpolation='nearest')
+#         plt.axis('off')
+#     return
 
 
 # 0.01 -> do 0 ate o 5th
@@ -221,8 +229,8 @@ def runNeuralNetwork(networkArchitecture, use_step_decay=False):
     k.clear_session()
     model = createModelForNeuralNetwork(networkArchitecture, data_shape)
 
-    learning_rate = 1e-5
-    adam = Adam(lr=learning_rate)
+    # learning_rate = 1e-5
+    # adam = Adam(lr=learning_rate)
     optimizer = getLearningOptFromNetwork(networkArchitecture)
     loss = 'binary_crossentropy'
 
