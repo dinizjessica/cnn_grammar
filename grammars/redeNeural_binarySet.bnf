@@ -1,5 +1,5 @@
 
-<network-architecture>	::= <pre-features> (<pre-classification>) (<softmax>) (<learning>)
+<network-architecture>	::= <pre-features> <pre-classification> (<softmax>) (<learning>)
 
 <pre-pre-features>		::= <pre-features> | <pre-features> <pre-features> | <pre-features> <pre-features> <pre-features>
 
@@ -36,8 +36,8 @@
 <padding> 				::= padding:same
 						  | padding:valid
 
-<pre-classification> 	::= <classification>
-						  | <classification> <classification>
+<pre-classification> 	::= (<classification>)
+						  | (<classification>) (<classification>)
 <classification> 		::= <fully-connected>
 <fully-connected> 		::= layer:fc <activation> num-units:<num-units> <bias>
 <activation> 			::= act:linear

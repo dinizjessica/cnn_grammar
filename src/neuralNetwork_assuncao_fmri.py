@@ -212,7 +212,7 @@ def step_decay(epoch):
 ##################################################
 
 def runNeuralNetwork(networkArchitecture, use_step_decay=True):
-    writeLog("starting neuralNetwork_assuncao process for: " + networkArchitecture)
+    writeLog("starting neuralNetwork_assuncao_fmri process for: " + networkArchitecture)
 
     # load data
     data_all = load_data_from_nii_files(data_paths)
