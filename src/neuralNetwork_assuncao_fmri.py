@@ -10,6 +10,7 @@ import matplotlib.pyplot as plt
 from keras import backend as k
 from keras.utils import to_categorical
 from keras.callbacks import LearningRateScheduler
+from keras.optimizers import Adam, SGD, RMSprop
 
 from grammar_helper import createModelForNeuralNetwork, getLearningOptFromNetwork
 from writeFileHelper import writeLog
@@ -18,15 +19,15 @@ from writeFileHelper import writeLog
 # pre-defined configuration
 ##################################################
 # data path
-data_folder_path = '/media/gpin/datasets/AMBAC/acerta_whole/classification/*.nii'
+data_folder_path = '/media/gpin/datasets/AMBAC/data_aug/*.nii'
 data_paths = glob.glob(data_folder_path) # list of each nii path as string
 
 # mask path
-data_mask_path = '/media/gpin/datasets/AMBAC/acerta_whole/mask_group_whole.nii'
+#data_mask_path = '/media/gpin/datasets/AMBAC/acerta_whole/mask_group_whole.nii'
 
 # labels
-data_classification_path = '/media/gpin/datasets/AMBAC/acerta_whole/y.csv'
-labels = pd.read_csv(data_classification_path, sep=",")
+data_classification_path = '/media/gpin/datasets/AMBAC/y_aug_backup.csv'
+labels = pd.read_csv(data_classification_path, sep=";")
 
 input_shape = (60, 73, 61)
 
@@ -50,60 +51,74 @@ def load_data_from_nii_files(file_paths):
     loaded_images = []
     for img_path in sorted(file_paths):
         image = nib.load(img_path).get_data()
-        loaded_images.append(image)
+        loaded_images.append(image)    
     return loaded_images
+    
+def transform_list_to_array(imgs_to_transform):
+    imgs_transformed, images = [], []
+    for img in imgs_to_transform:
+        imgs_transformed.append(np.array(img))
+        #print(img.shape)
+    images = np.asarray(imgs_transformed)
+    return images
 
 
-def load_mask_file(data_mask_path):
-    mask_file = nib.load(data_mask_path).get_data()
-    print(mask_file.shape)
+#def load_mask_file(data_mask_path):
+#    mask_file = nib.load(data_mask_path).get_data()
+#    print(mask_file.shape)
     # Verify if the whole brain mask is boolean
-    mask_file = mask_file.astype(bool)
-    return mask_file
+#    mask_file = mask_file.astype(bool)
+#    return mask_file
 
 
-def apply_mask_to_data_files(imgs_to_apply_mask, mask):
+#def apply_mask_to_data_files(imgs_to_apply_mask, mask):
     # Maintaining the original structure of the image file
-    masked_imgs =[]
-    for img in imgs_to_apply_mask:
-        masked_imgs.append(np.array(img * mask))
+#    masked_imgs =[]
+#    for img in imgs_to_apply_mask:
+#        masked_imgs.append(np.array(img * mask))
 
-    masked_imgs_converted_to_array = np.asarray(masked_imgs)
-    return masked_imgs_converted_to_array
+#    masked_imgs_converted_to_array = np.asarray(masked_imgs)
+#    return masked_imgs_converted_to_array
 
 
-def apply_zscore(images):
+#def apply_zscore(images):
     # rescale the data using zscore standardization technique
-    mean = np.mean(images)
-    standart_deviation = np.std(images)
-    zscored_imgs = (images - mean) / standart_deviation
-    return zscored_imgs
-
+#    mean = np.mean(images)
+#    standart_deviation = np.std(images)
+#    zscored_imgs = (images - mean) / standart_deviation
+#    return zscored_imgs
 
 def get_shuffled_index_list(index_list_size):
-    # Create list of indices and shuffle them
-    indices = np.arange(index_list_size)
-    np.random.shuffle(indices)
-    return indices
+    # Create list of indices and shuffle them, but maintain balanced classes
+    indexes = np.arange(index_list_size)
+    indexes_dis = indexes[:144]
+    indexes_con = indexes[144:]
+    #np.random.shuffle(indexes_dis)
+    #np.random.shuffle(indexes_con)
+    return indexes_dis, indexes_con
 
 
-def split_train_and_test_index_set(indices, img_quantity):
+def split_train_and_test_index_set(indexes_dis, indexes_con, img_quantity):
     training_img_quantity = int(training_images_percentage * img_quantity)
-    train_indices = indices[:training_img_quantity]
-    test_indices = indices[training_img_quantity:]
-    return train_indices, test_indices
+    train_indexes_dis, train_indexes_con = indexes_dis[:training_img_quantity], indexes_con[:training_img_quantity]
+    test_indexes_dis, test_indexes_con = indexes_dis[training_img_quantity:], indexes_con[training_img_quantity:]
+    print(test_indexes_dis, test_indexes_con)
+    train_indexes = np.concatenate((train_indexes_dis, train_indexes_con), axis=None)
+    test_indexes = np.concatenate((test_indexes_dis, test_indexes_con), axis=None)
+    print(train_indexes, test_indexes)
+    return train_indexes, test_indexes
 
 
-def split_data_into_training_and_test_sets(images, train_indices, test_indices):
-    X_train = images[train_indices, ...]
-    X_test = images[test_indices, ...]
+def split_data_into_training_and_test_sets(images, train_indexes, test_indexes):
+    X_train = images[train_indexes, ...]
+    X_test = images[test_indexes, ...]
     return X_train, X_test
 
 
-def create_outcome_variables(label_list, train_indices, test_indices):
-    target = label_list['Label']
-    y_train = target[train_indices]
-    y_test  = target[test_indices]
+def create_outcome_variables(label_list, train_indexes, test_indexes):
+    target = label_list['Labels']
+    y_train = target[train_indexes]
+    y_test  = target[test_indexes]
     return y_train, y_test
 
 
@@ -170,11 +185,11 @@ def show_activation(layer_name, model, X_train):
 # 0.001 -> do 376th ate o 400th
 def step_decay(epoch):
     if (epoch <= 5 or (epoch > 250 and epoch <= 375)):
-        return 0.01
-    elif epoch > 5 and epoch <= 250:
-        return 0.1
-    elif epoch > 375:
+        return 0.0001
+    elif epoch > 5 and epoch <= 80:
         return 0.001
+    elif epoch > 80:
+        return 0.01
 
 ##################################################
 # process
@@ -185,27 +200,31 @@ def runNeuralNetwork(networkArchitecture, use_step_decay=False):
 
     # load data
     data_all = load_data_from_nii_files(data_paths)
-    mask = load_mask_file(data_mask_path)
+    images = transform_list_to_array(data_all)
+    #print(images.shape)
+    #mask = load_mask_file(data_mask_path)
 
     # preprocessing
-    masked_imgs = apply_mask_to_data_files(data_all, mask)
-    images = apply_zscore(masked_imgs)
+    #masked_imgs = apply_mask_to_data_files(data_all, mask)
+    #images = apply_zscore(masked_imgs)
 
     img_quantity = images.shape[0]
-    indices = get_shuffled_index_list(img_quantity)
+    indexes_dis, indexes_con = get_shuffled_index_list(img_quantity)
+    img_quantity_balanced = indexes_dis.shape[0]
+    train_indexes, test_indexes = split_train_and_test_index_set(indexes_dis, indexes_con, img_quantity_balanced)
+    X_train, X_test = split_data_into_training_and_test_sets(images, train_indexes, test_indexes)
 
-    train_indices, test_indices = split_train_and_test_index_set(indices, img_quantity)
-    X_train, X_test = split_data_into_training_and_test_sets(images, train_indices, test_indices)
-
-    y_train_as_3D, y_test_as_3D = create_outcome_variables(labels, train_indices, test_indices)
+    y_train_as_3D, y_test_as_3D = create_outcome_variables(labels, train_indexes, test_indexes)
     y_train, y_test = reshape_outcome_variables_to_categorical(y_train_as_3D, y_test_as_3D)
 
     data_shape = tuple(X_train.shape[1:])
     k.clear_session()
     model = createModelForNeuralNetwork(networkArchitecture, data_shape)
 
+    learning_rate = 1e-5
+    adam = Adam(lr=learning_rate)
     optimizer = getLearningOptFromNetwork(networkArchitecture)
-    loss = 'categorical_crossentropy'
+    loss = 'binary_crossentropy'
 
     model.compile(optimizer=optimizer, loss=loss, metrics=['accuracy'])
     # import pdb; pdb.set_trace() # debug
@@ -234,6 +253,8 @@ def runNeuralNetwork(networkArchitecture, use_step_decay=False):
 
     writeLog('Loss in Test set:        %.02f' % loss_result)
     writeLog('Accuracy in Test set:    %.02f' % accuracy_result)
+    
+    #show_activation('conv2d_1', model, X_train)
 
     memory_clean(model)
 
@@ -243,6 +264,6 @@ def runNeuralNetwork(networkArchitecture, use_step_decay=False):
 ##################################################
 # test
 ##################################################
-ind = '(layer:conv num-filters:16 filter-shape:3 stride:1 padding:valid act:relu bias:False batch-normalisation:True merge-input:False) (layer:pool-max kernel-size:1 stride:2 padding:valid) (layer:conv num-filters:32 filter-shape:3 stride:1 padding:valid act:relu bias:True batch-normalisation:True merge-input:False) (layer:pool-max kernel-size:1 stride:2 padding:valid) (layer:conv num-filters:64 filter-shape:3 stride:1 padding:same act:relu bias:True batch-normalisation:True merge-input:False) (layer:pool-max kernel-size:1 stride:2 padding:valid) (layer:fc act:relu num-units:256 bias:True) (layer:fc act:relu num-units:512 bias:True) (layer:fc act:relu num-units:64 bias:True) (layer:fc act:softmax num-units:2 bias:True) (learning:gradient-descent learning-rate:0.01)'
+ind = '(layer:conv num-filters:32 filter-shape:4 stride:1 padding:same act:linear bias:False batch-normalisation:False merge-input:True) (layer:fc act:relu num-units:512 bias:True layer:fc act:linear num-units:128 bias:False) (layer:fc act:softmax num-units:2 bias:True) (learning:adam learning-rate:0.0001)'
 
 runNeuralNetwork(ind)

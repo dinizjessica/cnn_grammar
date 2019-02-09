@@ -47,5 +47,5 @@
 <bias> 					::= bias:<boolean>
 
 <softmax> 				::= layer:fc act:softmax num-units:2 bias:True
-<learning> 				::= learning:gradient-descent learning-rate:<learning-rate>
-<learning-rate>			::= 0.0001|0.001|0.01|0.1
+<learning> 				::= learning:adam learning-rate:<learning-rate>
+<learning-rate>			::= 0.00001|0.0001|0.001|0.01

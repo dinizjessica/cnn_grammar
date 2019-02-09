@@ -3,7 +3,7 @@ import os
 
 from keras.layers import Conv2D, MaxPooling2D, AveragePooling2D
 from keras.layers import Dense, Merge, BatchNormalization, Concatenate, Flatten
-from keras.optimizers import SGD
+from keras.optimizers import SGD, Adam
 from keras.models import Sequential
 
 from writeFileHelper import writeModelSummaryLog
@@ -148,7 +148,7 @@ def getFCLayer(fcString, *positional_parameters, **keyword_parameters): # classi
 def getLearningOpt(learningString):
 	# (learning:gradient-descent learning-rate:0.001)
 	learningRate = float(getValueFrom(learningString, 'learning-rate'))
-	return SGD(lr=learningRate)
+	return Adam(lr=learningRate)
 
 def getValueFrom(convString, fieldName):
 	regex ='.*?'+fieldName+':(\S+)'
