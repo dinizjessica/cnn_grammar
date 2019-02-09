@@ -93,8 +93,8 @@ def get_shuffled_index_list(index_list_size):
     indexes = np.arange(index_list_size)
     indexes_dis = indexes[:144]
     indexes_con = indexes[144:]
-    #np.random.shuffle(indexes_dis)
-    #np.random.shuffle(indexes_con)
+    np.random.shuffle(indexes_dis)
+    np.random.shuffle(indexes_con)
     return indexes_dis, indexes_con
 
 
