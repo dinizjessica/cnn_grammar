@@ -43,7 +43,7 @@
 <activation> 			::= act:linear
 						  | act:relu
 						  | act:sigmoid
-<num-units>				::= 128|256|512|1024|2048
+<num-units>				::= 128|256|512
 <bias> 					::= bias:<boolean>
 
 <softmax> 				::= layer:fc act:softmax num-units:2 bias:True
