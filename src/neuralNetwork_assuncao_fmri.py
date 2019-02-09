@@ -11,11 +11,13 @@ from keras import backend as k
 from keras.utils import to_categorical
 from keras.callbacks import LearningRateScheduler
 # from keras.optimizers import Adam, SGD, RMSprop
+from keras.callbacks import EarlyStopping
 
 from grammar_helper import createModelForNeuralNetwork, getLearningOptFromNetwork
 from writeFileHelper import writeLog
 
 from os import path
+import math
 
 ##################################################
 # pre-defined configuration
@@ -49,7 +51,7 @@ epochs = 100  # Increase this value for better results (i.e., more training)
 batch_size = 16   # Increasing this value might speed up fitting
 
 # percentage of images from the set to train
-training_images_percentage = 0.8
+training_images_percentage = 0.65
 
 
 ##################################################
@@ -59,9 +61,9 @@ def load_data_from_nii_files(file_paths):
     loaded_images = []
     for img_path in sorted(file_paths):
         image = nib.load(img_path).get_data()
-        loaded_images.append(image)    
+        loaded_images.append(image)
     return loaded_images
-    
+
 def transform_list_to_array(imgs_to_transform):
     imgs_transformed, images = [], []
     for img in imgs_to_transform:
@@ -99,8 +101,9 @@ def transform_list_to_array(imgs_to_transform):
 def get_shuffled_index_list(index_list_size):
     # Create list of indices and shuffle them, but maintain balanced classes
     indexes = np.arange(index_list_size)
-    indexes_dis = indexes[:144]
-    indexes_con = indexes[144:]
+    img_quantity_for_each_class = int(index_list_size/2)
+    indexes_dis = indexes[:img_quantity_for_each_class-1]
+    indexes_con = indexes[img_quantity_for_each_class:]
     np.random.shuffle(indexes_dis)
     np.random.shuffle(indexes_con)
     return indexes_dis, indexes_con
@@ -192,18 +195,23 @@ def log_execution_time(start_time, end_time):
 # 0.01 -> do 251st ate o 375th
 # 0.001 -> do 376th ate o 400th
 def step_decay(epoch):
-    if (epoch <= 5 or (epoch > 250 and epoch <= 375)):
-        return 0.0001
-    elif epoch > 5 and epoch <= 80:
-        return 0.001
-    elif epoch > 80:
-        return 0.01
+    # if (epoch <= 5 or (epoch > 250 and epoch <= 375)):
+    #     return 0.0001
+    # elif epoch > 5 and epoch <= 80:
+    #     return 0.001
+    # elif epoch > 80:
+    #     return 0.01
+    initial_lrate = 1e-5
+    drop = 0.5
+    epochs_drop = 10.0
+    lrate = initial_lrate * math.pow(drop, math.floor((1 + epoch) / epochs_drop))
+    return lrate
 
 ##################################################
 # process
 ##################################################
 
-def runNeuralNetwork(networkArchitecture, use_step_decay=False):
+def runNeuralNetwork(networkArchitecture, use_step_decay=True):
     writeLog("starting neuralNetwork_assuncao process for: " + networkArchitecture)
 
     # load data
@@ -234,6 +242,8 @@ def runNeuralNetwork(networkArchitecture, use_step_decay=False):
     optimizer = getLearningOptFromNetwork(networkArchitecture)
     loss = 'binary_crossentropy'
 
+    early_stopping = EarlyStopping(monitor='val_acc', patience=5, verbose=1, mode='auto')
+
     model.compile(optimizer=optimizer, loss=loss, metrics=['accuracy'])
     # import pdb; pdb.set_trace() # debug
 
@@ -241,14 +251,19 @@ def runNeuralNetwork(networkArchitecture, use_step_decay=False):
     start = time.time()
 
     # Let's test the model:
-    if (use_step_decay):
-        # alterar o learning rate em determinados pontos
-        lrate = LearningRateScheduler(step_decay)
-        callbacks_list = [lrate]
+    if use_step_decay:
+        lrate = LearningRateScheduler(step_decay) # alterar o learning rate em determinados pontos
+        callbacks_list = [lrate, early_stopping]
 
-        model_info = model.fit(X_train, y_train, validation_data=(X_test, y_test), epochs=epochs, batch_size=batch_size, callbacks=callbacks_list)
     else:
-        model_info = model.fit(X_train, y_train, validation_data=(X_test, y_test), epochs=epochs, batch_size=batch_size)
+        callbacks_list = [early_stopping]
+
+    model_info = model.fit(X_train,
+                           y_train,
+                           validation_data=(X_test, y_test),
+                           epochs=epochs,
+                           batch_size=batch_size,
+                           callbacks=callbacks_list)
 
     evaluation = model.evaluate(X_test, y_test)
 
@@ -261,7 +276,7 @@ def runNeuralNetwork(networkArchitecture, use_step_decay=False):
 
     writeLog('Loss in Test set:        %.02f' % loss_result)
     writeLog('Accuracy in Test set:    %.02f' % accuracy_result)
-    
+
     #show_activation('conv2d_1', model, X_train)
 
     memory_clean(model)
@@ -272,6 +287,6 @@ def runNeuralNetwork(networkArchitecture, use_step_decay=False):
 ##################################################
 # test
 ##################################################
-ind = '(layer:conv num-filters:32 filter-shape:4 stride:1 padding:same act:linear bias:False batch-normalisation:False merge-input:True) (layer:fc act:relu num-units:512 bias:True layer:fc act:linear num-units:128 bias:False) (layer:fc act:softmax num-units:2 bias:True) (learning:adam learning-rate:0.0001)'
+# ind = '(layer:conv num-filters:32 filter-shape:4 stride:1 padding:same act:linear bias:False batch-normalisation:False merge-input:True) (layer:fc act:relu num-units:512 bias:True layer:fc act:linear num-units:128 bias:False) (layer:fc act:softmax num-units:2 bias:True) (learning:adam learning-rate:0.00001)'
 
-runNeuralNetwork(ind)
+# runNeuralNetwork(ind)
