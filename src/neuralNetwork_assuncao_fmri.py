@@ -51,7 +51,7 @@ epochs = 100  # Increase this value for better results (i.e., more training)
 batch_size = 16   # Increasing this value might speed up fitting
 
 # percentage of images from the set to train
-training_images_percentage = 0.65
+training_images_percentage = 0.7
 
 
 ##################################################

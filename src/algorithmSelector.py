@@ -6,7 +6,7 @@ from neuralNetwork_assuncao_fmri import runNeuralNetwork as baseFMRI
 # pre-defined configuration
 #####################################
 # select the data base to run the algorithm; it can be either 'cifar' or 'outras'
-base = 'outras'
+base = 'fmri'
 
 epochs = 400
 batch_size = 32#128
