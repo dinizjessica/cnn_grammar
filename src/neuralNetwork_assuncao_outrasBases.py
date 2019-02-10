@@ -2,6 +2,7 @@ from keras.preprocessing.image import ImageDataGenerator
 from keras.callbacks import LearningRateScheduler, Callback
 
 from keras import backend as K
+from keras.callbacks import EarlyStopping
 
 from neuralNetworkHelper import getNumberOfClasses, getQuantityOfFilesInAFolder
 from writeFileHelper import writeLog
@@ -22,8 +23,8 @@ def runNeuralNetwork(networkArchitecture, data_dir, epochs=100, batch_size=32, i
     train_data_dir = data_dir+'/train'
     validation_data_dir = data_dir+'/validation'
     num_classes = getNumberOfClasses(train_data_dir)
-    nb_train_samples =  getQuantityOfFilesInAFolder(train_data_dir)             # dividido igualmente entre as classes 
-    nb_validation_samples = getQuantityOfFilesInAFolder(validation_data_dir)    # dividido igualmente entre as classes 
+    nb_train_samples =  getQuantityOfFilesInAFolder(train_data_dir)             # dividido igualmente entre as classes
+    nb_validation_samples = getQuantityOfFilesInAFolder(validation_data_dir)    # dividido igualmente entre as classes
     # print("nb_train_samples: " + str(nb_train_samples) + "; nb_validation_samples: " + str(nb_validation_samples))
     # print("num_classes: "+str(num_classes))
     #####################################
@@ -60,14 +61,15 @@ def runNeuralNetwork(networkArchitecture, data_dir, epochs=100, batch_size=32, i
     model = createModelForNeuralNetwork(networkArchitecture, input_shape, numClasses=num_classes)
 
     optimizer = getLearningOptFromNetwork(networkArchitecture)
-    
-    model.compile(optimizer=optimizer, 
-                  loss='sparse_categorical_crossentropy', 
+
+    model.compile(optimizer=optimizer,
+                  loss='sparse_categorical_crossentropy',
                   metrics=['accuracy'])
 
     # alterar o learning rate em determinados pontos
-    lrate = LearningRateScheduler(step_decay) 
-    callbacks_list = [lrate]
+    # lrate = LearningRateScheduler(step_decay)
+    early_stopping = EarlyStopping(monitor='val_acc', patience=5, verbose=1, mode='auto')
+    callbacks_list = [early_stopping]  # [lrate]
 
     # model training
     start = time.time()

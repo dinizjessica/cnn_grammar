@@ -2,18 +2,22 @@ from neuralNetwork_assuncao_outrasBases import runNeuralNetwork as outrasBases
 from neuralNetwork_assuncao import runNeuralNetwork as baseCifar
 from neuralNetwork_assuncao_fmri import runNeuralNetwork as baseFMRI
 
+from os import path
+
 #####################################
 # pre-defined configuration
 #####################################
 # select the data base to run the algorithm; it can be either 'cifar' or 'outras'
-base = 'fmri'
+base = 'outras'
 
-epochs = 400
-batch_size = 32#128
+epochs = 100
+batch_size = 128  # 128 para as de melanoma e 32 para o cifar
 img_width, img_height = 120, 120 # used during tests for melanoma dataset 
 
 # if testing with another database but cifar, inform the dataset diretory
-data_dir = '/mnt/E0A05FEAA05FC5A6/Bases/melanoma/jessica/data/data'
+# data_dir = '/mnt/E0A05FEAA05FC5A6/Bases/melanoma/jessica/data/data'
+# data_dir = '/content/drive/My Drive/UFRPE/mestrado-melanoma_set/skin_lesions_4_classes'
+data_dir = path.abspath(path.join(__file__, "../../../../../UFRPE/mestrado-melanoma_set/skin_lesions_4_classes"))
 
 #####################################
 
