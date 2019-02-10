@@ -17,7 +17,7 @@ img_width, img_height = 120, 120 # used during tests for melanoma dataset
 # if testing with another database but cifar, inform the dataset diretory
 # data_dir = '/mnt/E0A05FEAA05FC5A6/Bases/melanoma/jessica/data/data'
 # data_dir = '/content/drive/My Drive/UFRPE/mestrado-melanoma_set/skin_lesions_4_classes'
-data_dir = path.abspath(path.join(__file__, "../../../../../UFRPE/mestrado-melanoma_set/skin_lesions_4_classes"))
+data_dir = path.abspath(path.join(__file__, "../../../../UFRPE/mestrado-melanoma_set/skin_lesions_4_classes"))
 
 #####################################
 
