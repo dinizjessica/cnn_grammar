@@ -12,6 +12,7 @@ from writeFileHelper import writeLog
 from representation.tree import Tree
 from representation.derivation import generate_tree, pi_grow
 
+import traceback
 
 class Individual(object):
     """
@@ -177,6 +178,7 @@ class Individual(object):
             except Exception as error:
                 # import pdb; pdb.set_trace()
                 writeLog('[individual.py] Caught this error: ' + repr(error))
+                traceback.print_exc()
                 writeLog('tries '+ str(tries))
                 tries += 1
                 # generate new individual
