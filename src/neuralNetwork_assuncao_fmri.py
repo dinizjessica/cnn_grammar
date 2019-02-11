@@ -36,7 +36,7 @@ data_paths = glob.glob(data_folder_path) # list of each nii path as string
 
 # labels
 # data_classification_path = '/media/gpin/datasets/AMBAC/y_aug_backup.csv'
-data_classification_path = fmri_dataset_path+'/y.csv'
+data_classification_path = fmri_dataset_path+'/y_aug_backup.csv'
 labels = pd.read_csv(data_classification_path, sep=",")
 
 input_shape = (60, 73, 61)
@@ -61,9 +61,9 @@ def load_data_from_nii_files(file_paths):
     loaded_images = []
     for img_path in sorted(file_paths):
         image = nib.load(img_path).get_data()
-        loaded_images.append(image)
+        loaded_images.append(image)    
     return loaded_images
-
+    
 def transform_list_to_array(imgs_to_transform):
     imgs_transformed, images = [], []
     for img in imgs_to_transform:
@@ -127,7 +127,7 @@ def split_data_into_training_and_test_sets(images, train_indexes, test_indexes):
 
 
 def create_outcome_variables(label_list, train_indexes, test_indexes):
-    target = label_list['Label']
+    target = label_list['Labels']
     y_train = target[train_indexes]
     y_test  = target[test_indexes]
     return y_train, y_test
@@ -276,7 +276,7 @@ def runNeuralNetwork(networkArchitecture, use_step_decay=True):
 
     writeLog('Loss in Test set:        %.02f' % loss_result)
     writeLog('Accuracy in Test set:    %.02f' % accuracy_result)
-
+    
     #show_activation('conv2d_1', model, X_train)
 
     memory_clean(model)
