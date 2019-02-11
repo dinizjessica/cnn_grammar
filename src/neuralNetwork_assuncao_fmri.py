@@ -34,8 +34,8 @@ data_paths = glob.glob(data_folder_path) # list of each nii path as string
 
 # labels
 # data_classification_path = '/media/gpin/datasets/AMBAC/y_aug_backup.csv'
-data_classification_path = fmri_dataset_path+'/y.csv'
-labels = pd.read_csv(data_classification_path, sep=",")
+data_classification_path = fmri_dataset_path+'/y_aug_backup.csv'
+labels = pd.read_csv(data_classification_path, sep=";")
 
 input_shape = (60, 73, 61)
 
@@ -124,7 +124,7 @@ def split_data_into_training_and_test_sets(images, train_indexes, test_indexes):
 
 
 def create_outcome_variables(label_list, train_indexes, test_indexes):
-    target = label_list['Label']
+    target = label_list['Labels']
     y_train = target[train_indexes]
     y_test  = target[test_indexes]
     return y_train, y_test
@@ -193,11 +193,11 @@ def log_execution_time(start_time, end_time):
 # 0.001 -> do 376th ate o 400th
 def step_decay(epoch):
     if (epoch <= 5 or (epoch > 250 and epoch <= 375)):
-        return 0.0001
+        return 0.00001
     elif epoch > 5 and epoch <= 80:
-        return 0.001
+        return 0.0001
     elif epoch > 80:
-        return 0.01
+        return 0.001
 
 ##################################################
 # process
