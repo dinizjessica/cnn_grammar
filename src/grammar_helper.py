@@ -101,7 +101,8 @@ def getConvLayer(convString, input_shape):
 	numFilters = int(getValueFrom(convString, 'num-filters'))
 	filterShapeNum = int(getValueFrom(convString, 'filter-shape'))
 	filterShape = (filterShapeNum,filterShapeNum)
-	stride = getValueFrom(convString, 'stride')
+	stride = int(getValueFrom(convString, 'stride'))
+	strideValue = (stride, stride)
 	padding = getValueFrom(convString, 'padding')
 	activation = getValueFrom(convString, 'act')
 	bias = True if getValueFrom(convString, 'bias') == 'True' else False
@@ -109,7 +110,7 @@ def getConvLayer(convString, input_shape):
 	mergeInput = True if getValueFrom(convString, 'merge-input') == 'True' else False #nao sei como usar
 	
 	
-	return Conv2D(numFilters, filterShape, activation=activation, padding=padding, input_shape=input_shape, use_bias=bias)
+	return Conv2D(numFilters, filterShape, strides=strideValue, activation=activation, padding=padding, input_shape=input_shape, use_bias=bias)
 
 def hasBatchNormalization(convOrPoolString):
 	layerType = getValueFrom(convOrPoolString, 'layer')
