@@ -104,8 +104,8 @@ def get_shuffled_index_list(index_list_size):
     img_quantity_for_each_class = int(index_list_size/2)
     indexes_dis = indexes[:img_quantity_for_each_class-1]
     indexes_con = indexes[img_quantity_for_each_class:]
-    np.random.shuffle(indexes_dis)
-    np.random.shuffle(indexes_con)
+    # np.random.shuffle(indexes_dis)
+    # np.random.shuffle(indexes_con)
     return indexes_dis, indexes_con
 
 
