@@ -26,7 +26,7 @@ fmri_dataset_path = path.abspath(path.join(__file__, "../../datasets/fmri/"))
 
 # data path
 # data_folder_path = '/media/gpin/datasets/AMBAC/data_aug/*.nii'
-data_folder_path = fmri_dataset_path+'/whole/*.nii'
+data_folder_path = fmri_dataset_path+'/data_aug/*.nii'
 data_paths = glob.glob(data_folder_path) # list of each nii path as string
 
 # mask path
@@ -101,8 +101,8 @@ def get_shuffled_index_list(index_list_size):
     indexes = np.arange(index_list_size)
     indexes_dis = indexes[:144]
     indexes_con = indexes[144:]
-    np.random.shuffle(indexes_dis)
-    np.random.shuffle(indexes_con)
+    #np.random.shuffle(indexes_dis)
+    #np.random.shuffle(indexes_con)
     return indexes_dis, indexes_con
 
 
