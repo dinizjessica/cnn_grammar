@@ -28,7 +28,7 @@ fmri_dataset_path = path.abspath(path.join(__file__, "../../datasets/fmri/"))
 
 # data path
 # data_folder_path = '/media/gpin/datasets/AMBAC/data_aug/*.nii'
-data_folder_path = fmri_dataset_path+'/whole/*.nii'
+data_folder_path = fmri_dataset_path+'/data_aug/*.nii'
 data_paths = glob.glob(data_folder_path) # list of each nii path as string
 
 # mask path
@@ -37,7 +37,7 @@ data_paths = glob.glob(data_folder_path) # list of each nii path as string
 # labels
 # data_classification_path = '/media/gpin/datasets/AMBAC/y_aug_backup.csv'
 data_classification_path = fmri_dataset_path+'/y_aug_backup.csv'
-labels = pd.read_csv(data_classification_path, sep=",")
+labels = pd.read_csv(data_classification_path, sep=";")
 
 input_shape = (60, 73, 61)
 
