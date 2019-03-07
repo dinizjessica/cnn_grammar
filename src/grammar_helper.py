@@ -5,6 +5,7 @@ from keras.layers import Conv2D, MaxPooling2D, AveragePooling2D
 from keras.layers import Dense, Merge, BatchNormalization, Concatenate, Flatten
 from keras.optimizers import SGD, Adam
 from keras.models import Sequential
+from keras import regularizers
 
 from writeFileHelper import writeModelSummaryLog
 
@@ -109,7 +110,8 @@ def getConvLayer(convString, input_shape):
 	mergeInput = True if getValueFrom(convString, 'merge-input') == 'True' else False #nao sei como usar
 	
 	
-	return Conv2D(numFilters, filterShape, activation=activation, padding=padding, input_shape=input_shape, use_bias=bias)
+	return Conv2D(numFilters, filterShape, activation=activation, padding=padding, input_shape=input_shape,
+				  use_bias=bias, kernel_regularizer=regularizers.l2(0.01), activity_regularizer=regularizers.l1(0.01))
 
 def hasBatchNormalization(convOrPoolString):
 	layerType = getValueFrom(convOrPoolString, 'layer')
@@ -143,12 +145,13 @@ def getFCLayer(fcString, *positional_parameters, **keyword_parameters): # classi
 	activation = getValueFrom(fcString, 'act')
 	bias = True if getValueFrom(fcString, 'bias') == 'True' else False
 
-	return Dense(numUnits, activation=activation, use_bias=bias)
+	return Dense(numUnits, activation=activation, use_bias=bias,
+				 kernel_regularizer=regularizers.l2(0.01), activity_regularizer=regularizers.l1(0.01))
 
 def getLearningOpt(learningString):
 	# (learning:gradient-descent learning-rate:0.001)
 	learningRate = float(getValueFrom(learningString, 'learning-rate'))
-	return Adam(lr=learningRate)
+	return Adam(lr=learningRate, decay=0.01/40)
 
 def getValueFrom(convString, fieldName):
 	regex ='.*?'+fieldName+':(\S+)'

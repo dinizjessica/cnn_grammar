@@ -1,5 +1,4 @@
 from keras.preprocessing.image import ImageDataGenerator
-from keras.callbacks import LearningRateScheduler, Callback
 
 from keras import backend as K
 from keras.callbacks import EarlyStopping, ModelCheckpoint
@@ -73,7 +72,7 @@ def runNeuralNetwork(networkArchitecture, data_dir, epochs=100, batch_size=32, i
 
     # alterar o learning rate em determinados pontos
     # lrate = LearningRateScheduler(step_decay)
-    early_stopping = EarlyStopping(monitor='val_acc', patience=7, verbose=1, mode='auto')
+    early_stopping = EarlyStopping(monitor='val_acc', patience=8, verbose=1, mode='auto')
     saveBestModel = ModelCheckpoint(best_weights_filepath, monitor='val_acc', verbose=1, save_best_only=True, mode='auto')
 
     callbacks_list = [early_stopping, saveBestModel]  # [lrate]
@@ -86,7 +85,7 @@ def runNeuralNetwork(networkArchitecture, data_dir, epochs=100, batch_size=32, i
                                   epochs=epochs,
                                   validation_data=validation_generator,
                                   validation_steps=nb_validation_samples // batch_size,
-                                  callbacks=callbacks_list #[earlyStopping, saveBestModel]
+                                  callbacks=callbacks_list
                                   )
 
     #reload best weights
