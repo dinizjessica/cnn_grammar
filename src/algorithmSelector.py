@@ -1,6 +1,6 @@
 from neuralNetwork_assuncao_outrasBases import runNeuralNetwork as outrasBases
-from neuralNetwork_assuncao import runNeuralNetwork as baseCifar
-from neuralNetwork_assuncao_fmri import runNeuralNetwork as baseFMRI
+# from neuralNetwork_assuncao import runNeuralNetwork as baseCifar
+# from neuralNetwork_assuncao_fmri import runNeuralNetwork as baseFMRI
 
 from os import path
 
@@ -10,23 +10,23 @@ from os import path
 # select the data base to run the algorithm; it can be either 'cifar' or 'outras'
 base = 'outras'
 
-epochs = 100
+epochs = 50
 batch_size = 128  # 128 para as de melanoma e 32 para o cifar
-img_width, img_height = 120, 120 # used during tests for melanoma dataset 
+img_width, img_height = 75, 75 # used during tests for melanoma dataset
 
 # if testing with another database but cifar, inform the dataset diretory
 # data_dir = '/mnt/E0A05FEAA05FC5A6/Bases/melanoma/jessica/data/data'
 # data_dir = '/content/drive/My Drive/UFRPE/mestrado-melanoma_set/skin_lesions_4_classes'
-data_dir = path.abspath(path.join(__file__, "../../../../UFRPE/mestrado-melanoma_set/skin_lesions_4_classes"))
+data_dir = path.abspath(path.join(__file__, "../../../../UFRPE/mestrado-melanoma_set/skin_lessions_2_classes"))
 
 #####################################
 
 def runNeuralNetwork(networkArchitecture):
-	if base == 'cifar':
-		return baseCifar(networkArchitecture, epochs, batch_size)
-	elif base == 'fmri':
-		return baseFMRI(networkArchitecture)
-	elif base == 'outras':
+	# if base == 'cifar':
+	# 	return baseCifar(networkArchitecture, epochs, batch_size)
+	# elif base == 'fmri':
+	# 	return baseFMRI(networkArchitecture)
+	if base == 'outras':
 		return outrasBases(networkArchitecture, 
 						   data_dir, 
 						   epochs,

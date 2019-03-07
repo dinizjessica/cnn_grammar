@@ -8,7 +8,6 @@ from neuralNetworkHelper import getNumberOfClasses, getQuantityOfFilesInAFolder
 from writeFileHelper import writeLog
 from grammar_helper import createModelForNeuralNetwork, getLearningOptFromNetwork
 
-import os
 import gc
 import time
 
