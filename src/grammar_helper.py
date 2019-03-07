@@ -148,7 +148,7 @@ def getFCLayer(fcString, *positional_parameters, **keyword_parameters): # classi
 def getLearningOpt(learningString):
 	# (learning:gradient-descent learning-rate:0.001)
 	learningRate = float(getValueFrom(learningString, 'learning-rate'))
-	return Adam(lr=learningRate, decay=0.01/40)
+	return Adam(lr=learningRate)
 
 def getValueFrom(convString, fieldName):
 	regex ='.*?'+fieldName+':(\S+)'
