@@ -10,6 +10,7 @@ from grammar_helper import createModelForNeuralNetwork, getLearningOptFromNetwor
 
 import gc
 import time
+import os
 
 
 def runNeuralNetwork(networkArchitecture, data_dir, epochs=100, batch_size=32, img_width=120, img_height=120):
@@ -65,6 +66,10 @@ def runNeuralNetwork(networkArchitecture, data_dir, epochs=100, batch_size=32, i
     model.compile(optimizer=optimizer,
                   loss='sparse_categorical_crossentropy',
                   metrics=['accuracy'])
+
+    # remove saved best weight if it exists
+    if os.path.exists(best_weights_filepath):
+        os.remove(best_weights_filepath)
 
     # alterar o learning rate em determinados pontos
     # lrate = LearningRateScheduler(step_decay)
