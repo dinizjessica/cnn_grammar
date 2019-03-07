@@ -110,8 +110,8 @@ def getConvLayer(convString, input_shape):
 	mergeInput = True if getValueFrom(convString, 'merge-input') == 'True' else False #nao sei como usar
 	
 	
-	return Conv2D(numFilters, filterShape, activation=activation, padding=padding, input_shape=input_shape,
-				  use_bias=bias, kernel_regularizer=regularizers.l2(0.01), activity_regularizer=regularizers.l1(0.01))
+		return Conv2D(numFilters, filterShape, activation=activation, padding=padding, input_shape=input_shape,
+				  use_bias=bias, kernel_regularizer=regularizers.l2(0.0001), activity_regularizer=regularizers.l1(0.0001))
 
 def hasBatchNormalization(convOrPoolString):
 	layerType = getValueFrom(convOrPoolString, 'layer')
@@ -146,7 +146,7 @@ def getFCLayer(fcString, *positional_parameters, **keyword_parameters): # classi
 	bias = True if getValueFrom(fcString, 'bias') == 'True' else False
 
 	return Dense(numUnits, activation=activation, use_bias=bias,
-				 kernel_regularizer=regularizers.l2(0.01), activity_regularizer=regularizers.l1(0.01))
+				 kernel_regularizer=regularizers.l2(0.0001), activity_regularizer=regularizers.l1(0.0001))
 
 def getLearningOpt(learningString):
 	# (learning:gradient-descent learning-rate:0.001)
