@@ -9,7 +9,7 @@
 <features>				::= <convolution>
 			 	  		  | <pooling>
 
-<convolution> 			::= layer:conv num-filters:<num-filters> filter-shape:<filter-shape> stride:<stride> <padding> act:relu <bias> <batch-normalisation> merge-input:False
+<convolution> 			::= layer:conv num-filters:<num-filters> filter-shape:<filter-shape> stride:<stride> padding:same act:relu <bias> <batch-normalisation> merge-input:False
 
 <num-filters>			::= 10|20|32|50
 <filter-shape>			::= 3|5
