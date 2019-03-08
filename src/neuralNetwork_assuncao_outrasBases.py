@@ -72,7 +72,7 @@ def runNeuralNetwork(networkArchitecture, data_dir, epochs=100, batch_size=32, i
 
     # alterar o learning rate em determinados pontos
     # lrate = LearningRateScheduler(step_decay)
-    early_stopping = EarlyStopping(monitor='val_acc', patience=8, verbose=1, mode='auto')
+    early_stopping = EarlyStopping(monitor='val_acc', patience=10, verbose=1, mode='auto')
     saveBestModel = ModelCheckpoint(best_weights_filepath, monitor='val_acc', verbose=1, save_best_only=True, mode='auto')
 
     callbacks_list = [early_stopping, saveBestModel]  # [lrate]

@@ -4,14 +4,14 @@
 <pre-features>			::= (<features>) (<features>)
 						  | (<features>) (<features>) (<features>)
 						  | (<features>) (<features>) (<features>) (<features>)
-						  | (<features>) (<features>) (<features>) (<features>) (<features>)
+						  | (<features>)
 
-<features>				::= <convolution> <pooling>
+<features>				::= <convolution> (<pooling>)
 			 	  		  | <convolution>
 
-<convolution> 			::= layer:conv num-filters:<num-filters> filter-shape:<filter-shape> stride:<stride> padding:same act:relu <bias> <batch-normalisation> merge-input:False
+<convolution> 			::= layer:conv num-filters:<num-filters> filter-shape:<filter-shape> stride:<stride> padding:same act:relu bias:True <batch-normalisation> merge-input:False
 
-<num-filters>			::= 10|20|32|50
+<num-filters>			::= 10|20|32|50|5
 <filter-shape>			::= 3|5
 <stride>				::= 1|2
 <boolean>				::= True|False
@@ -24,10 +24,9 @@
 <pre-classification> 	::= (<classification>)
 						  | (<classification>) (<classification>)
 <classification> 		::= <fully-connected>
-<fully-connected> 		::= layer:fc act:relu num-units:<num-units> <bias>
+<fully-connected> 		::= layer:fc act:relu num-units:<num-units> bias:True
 
-<num-units>				::= 256|512|750
-<bias> 					::= bias:True
+<num-units>				::= 1024|256|512|750
 
 <softmax> 				::= layer:fc act:softmax num-units:2 bias:True
 <learning> 				::= learning:adam learning-rate:<learning-rate>
