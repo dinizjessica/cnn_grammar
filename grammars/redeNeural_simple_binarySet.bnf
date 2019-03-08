@@ -7,7 +7,6 @@
 						  | <features>
 
 <features>				::= (<convolution>) (<pooling>)
-			 	  		  | (<convolution>)
 
 <convolution> 			::= layer:conv num-filters:<num-filters> filter-shape:<filter-shape> stride:<stride> padding:same act:relu bias:True <batch-normalisation> merge-input:False
 
