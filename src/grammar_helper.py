@@ -101,7 +101,7 @@ def getConvLayer(convString, input_shape):
 	numFilters = int(getValueFrom(convString, 'num-filters'))
 	filterShapeNum = int(getValueFrom(convString, 'filter-shape'))
 	filterShape = (filterShapeNum,filterShapeNum)
-	stride = getValueFrom(convString, 'stride')
+	strides = int(getValueFrom(convString, 'stride'))
 	padding = getValueFrom(convString, 'padding')
 	activation = getValueFrom(convString, 'act')
 	bias = True if getValueFrom(convString, 'bias') == 'True' else False
@@ -109,7 +109,7 @@ def getConvLayer(convString, input_shape):
 	mergeInput = True if getValueFrom(convString, 'merge-input') == 'True' else False #nao sei como usar
 	
 	
-	return Conv2D(numFilters, filterShape, activation=activation, padding=padding, input_shape=input_shape, use_bias=bias)
+	return Conv2D(numFilters, filterShape, activation=activation, strides=strides, padding=padding, input_shape=input_shape, use_bias=bias)
 
 def hasBatchNormalization(convOrPoolString):
 	layerType = getValueFrom(convOrPoolString, 'layer')
@@ -128,7 +128,7 @@ def getPoolLayer(poolString, input_shape):
 	padding = getValueFrom(poolString, 'padding')
 
 	if poolType == 'pool-max':
-		return 	MaxPooling2D(pool_size=(2, 2), strides=stride, padding=padding, input_shape=input_shape)
+		return MaxPooling2D(pool_size=(2, 2), strides=stride, padding=padding, input_shape=input_shape)
 	elif poolType == 'pool-avg':
 		return AveragePooling2D(pool_size=(2, 2), strides=stride, padding=padding, input_shape=input_shape)
 
@@ -148,7 +148,7 @@ def getFCLayer(fcString, *positional_parameters, **keyword_parameters): # classi
 def getLearningOpt(learningString):
 	# (learning:gradient-descent learning-rate:0.001)
 	learningRate = float(getValueFrom(learningString, 'learning-rate'))
-	return Adam(lr=learningRate)
+	return Adam(lr=learningRate, epsilon=0.1)
 
 def getValueFrom(convString, fieldName):
 	regex ='.*?'+fieldName+':(\S+)'

@@ -10,8 +10,8 @@ from os import path
 # select the data base to run the algorithm; it can be either 'cifar' or 'outras'
 base = 'outras'
 
-epochs = 30
-batch_size = 128  # 128 para as de melanoma e 32 para o cifar
+epochs = 50
+batch_size = 20  # 128 para as de melanoma e 32 para o cifar
 img_width, img_height = 75, 75 # used during tests for melanoma dataset
 
 # if testing with another database but cifar, inform the dataset diretory
