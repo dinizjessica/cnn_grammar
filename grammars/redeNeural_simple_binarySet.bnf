@@ -1,19 +1,20 @@
 
 <network-architecture>	::= <pre-features> <pre-classification> (<softmax>) (<learning>)
 
-<pre-features>			::= <features> <features>
-						  | <features> <features> <features>
-						  | <features> <features> <features> <features>
-						  | <features>
+<pre-features>			::= (<features>) (<features>)
+						  | (<features>) (<features>) (<features>)
+						  | (<features>) (<features>) (<features>) (<features>)
+						  | (<features>) (<features>) (<features>) (<features>) (<features>)
+						  | (<features>)
 
-<features>				::= (<convolution>) (<pooling>)
-						  | (<convolution>)
+<features>				::= <convolution>
+						  | <pooling>
 
 <convolution> 			::= layer:conv num-filters:<num-filters> filter-shape:<filter-shape> stride:<stride> padding:same act:relu bias:True <batch-normalisation> merge-input:False
 
 <num-filters>			::= 10|20|32|50|5
-<filter-shape>			::= 3|5
-<stride>				::= 1|2
+<filter-shape>			::= 1|3|5
+<stride>				::= 1|2|3
 <boolean>				::= True|False
 
 <batch-normalisation> 	::= batch-normalisation:<boolean>
