@@ -28,7 +28,7 @@ def createModelForNeuralNetwork(networkArchitecture, input_shape, *positional_pa
         addDropout = hasDropout(classLayer)
         model.add(getClassificationLayer(classLayer))
         if addDropout:
-            model.add(Dropout(0.5))
+            model.add(Dropout(0.25))
 
     # fully-connected - <softmax>
     if ('numClasses' in keyword_parameters):

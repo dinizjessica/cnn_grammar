@@ -11,7 +11,7 @@ from os import path
 base = 'outras'
 
 epochs = 50
-batch_size = 20  # 128 para as de melanoma e 32 para o cifar
+batch_size = 32  # 128 para as de melanoma e 32 para o cifar
 img_width, img_height = 75, 75 # used during tests for melanoma dataset
 
 # if testing with another database but cifar, inform the dataset diretory
