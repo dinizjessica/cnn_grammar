@@ -121,7 +121,9 @@ def hasBatchNormalization(convOrPoolString):
     return False
 
 def hasDropout(redeString):
-    return True if getValueFrom(redeString, 'dropout') == 'True' else False
+    if hasValueFrom(redeString, 'dropout'):
+        return True if getValueFrom(redeString, 'dropout') == 'True' else False
+    return False
 
 def getPoolLayer(poolString, input_shape):
     # (pool-type:layer:pool-avg kernel-size:1 stride:1 padding:same)
@@ -165,3 +167,10 @@ def getValueFrom(convString, fieldName):
     rg = re.compile(regex,re.IGNORECASE|re.DOTALL)
     m = rg.search(convString)
     return m.group(1)
+
+def hasValueFrom(convString, fieldName):
+    hasFieldNameInConvString = re.findall(fieldName, convString)
+    if (hasFieldNameInConvString):
+        return True
+    else:
+        return False
