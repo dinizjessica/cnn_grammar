@@ -1,0 +1,51 @@
+
+<network-architecture>	::= <pre-features> <pre-classification> (<softmax>) (<learning>)
+
+<pre-pre-features>		::= <pre-features> | <pre-features> <pre-features> | <pre-features> <pre-features> <pre-features>
+
+<pre-features>			::= (<features>) (<features>) (<features>) (<features>) (<features>) (<features>) (<features>) (<features>) (<features>)
+						  | (<features>) (<features>) (<features>) (<features>) (<features>) (<features>) (<features>) (<features>) (<features>) (<features>)
+						  | (<features>) (<features>) (<features>) (<features>) (<features>) (<features>) (<features>) (<features>)
+						  | (<features>) (<features>) 
+						  | (<features>) (<features>) (<features>)
+						  | (<features>) (<features>) (<features>) (<features>) 
+						  | (<features>) (<features>) (<features>) (<features>) (<features>)
+						  | (<features>) (<features>) (<features>) (<features>) (<features>) (<features>)
+						  | (<features>) (<features>) (<features>) (<features>) (<features>) (<features>) (<features>)
+						  | (<features>) (<features>) 
+						  | (<features>)
+						  
+
+<features>				::= <convolution>
+			 	  		  | <pooling>
+
+<convolution> 			::= layer:conv num-filters:<num-filters> filter-shape:<filter-shape> stride:<stride> <padding> <activation> <bias> <batch-normalisation> <merge-input>
+<num-filters>			::= 32|64|128|256
+<filter-shape>			::= 1|2|3|4|5
+<stride>				::= 1|2|3
+
+<batch-normalisation> 	::= batch-normalisation:<boolean>
+<merge-input> 			::= merge-input:<boolean>
+
+<boolean>				::= True|False
+
+<pooling> 				::= <pool-type> kernel-size:<kernel-size> stride:<stride> <padding>
+<pool-type> 			::= layer:pool-avg
+						  | layer:pool-max
+<kernel-size>			::= 1|2|3|4|5
+<padding> 				::= padding:same
+						  | padding:valid
+
+<pre-classification> 	::= (<classification>)
+						  | (<classification>) (<classification>)
+<classification> 		::= <fully-connected>
+<fully-connected> 		::= layer:fc <activation> num-units:<num-units> <bias>
+<activation> 			::= act:linear
+						  | act:relu
+						  | act:sigmoid
+<num-units>				::= 128|256|512|1024|2048
+<bias> 					::= bias:<boolean>
+
+<softmax> 				::= layer:fc act:softmax num-units:2 bias:True
+<learning> 				::= learning:gradient-descent learning-rate:<learning-rate>
+<learning-rate>			::= 0.0001|0.001|0.01|0.1

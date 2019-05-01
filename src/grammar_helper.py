@@ -153,6 +153,11 @@ def getFCLayer(fcString, *positional_parameters, **keyword_parameters): # classi
 def getLearningOpt(learningString):
     # (learning:gradient-descent learning-rate:0.001)
     learningRate = float(getValueFrom(learningString, 'learning-rate'))
+    optimizer = getValueFrom(learningString, 'learning')
+    if optimizer == 'gradient-descent':
+        print('SGD')
+        return SGD(lr=learningRate)
+    print('Adam')
     return Adam(lr=learningRate, epsilon=0.1)
 
 def getValueFrom(convString, fieldName):
