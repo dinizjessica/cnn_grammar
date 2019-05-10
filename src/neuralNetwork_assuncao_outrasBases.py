@@ -62,24 +62,43 @@ def runNeuralNetwork(networkArchitecture, data_dir, epochs=100, batch_size=32, i
 
     optimizer = getLearningOptFromNetwork(networkArchitecture)
 
+    results = 0
+    for x in range(3):
+        scores = compileTrainTest(batch_size,
+                                  best_weights_filepath,
+                                  epochs,
+                                  model,
+                                  nb_train_samples,
+                                  nb_validation_samples,
+                                  optimizer,
+                                  train_generator,
+                                  validation_generator)
+
+        accuracy = scores[1]
+        writeLog("Accuracy on test data is: " + str(accuracy))
+
+        memoryClean(train_generator,validation_generator,train_datagen,test_datagen,model)
+        results = results + accuracy
+
+    average = results/3
+    return average
+
+
+def compileTrainTest(batch_size, best_weights_filepath, epochs, model, nb_train_samples, nb_validation_samples,
+                     optimizer, train_generator, validation_generator):
     model.compile(optimizer=optimizer,
                   loss='sparse_categorical_crossentropy',
                   metrics=['accuracy'])
-
     # remove saved best weight if it exists
     if os.path.exists(best_weights_filepath):
         os.remove(best_weights_filepath)
-
     # alterar o learning rate em determinados pontos
     # lrate = LearningRateScheduler(step_decay)
-    early_stopping = EarlyStopping(monitor='val_acc', patience=10, verbose=1, mode='auto')
-    saveBestModel = ModelCheckpoint(best_weights_filepath, monitor='val_acc', verbose=1, save_best_only=True, mode='auto')
-
-    callbacks_list = [saveBestModel]  # [lrate, early_stopping]
-
+    saveBestModel = ModelCheckpoint(best_weights_filepath, monitor='val_acc', verbose=1, save_best_only=True,
+                                    mode='auto')
+    callbacks_list = [saveBestModel]
     # model training
     start = time.time()
-
     history = model.fit_generator(train_generator,
                                   steps_per_epoch=nb_train_samples // batch_size,
                                   epochs=epochs,
@@ -87,26 +106,15 @@ def runNeuralNetwork(networkArchitecture, data_dir, epochs=100, batch_size=32, i
                                   validation_steps=nb_validation_samples // batch_size,
                                   callbacks=callbacks_list
                                   )
-
-    #reload best weights
+    # reload best weights
     model.load_weights(best_weights_filepath)
-
     writeLog("[INFO] evaluating network...")
     scores = model.evaluate_generator(validation_generator, nb_validation_samples)
-
     end = time.time()
     logRunTime(start, end)
     logHistoryLog(history)
+    return scores
 
-    # writeLog("[INFO] evaluating network...")
-    # predictions = model.predict(test_features_val, batch_size=batch_size)
-
-    accuracy = scores[1]
-    writeLog("Accuracy on test data is: " + str(accuracy))
-
-    memoryClean(train_generator,validation_generator,train_datagen,test_datagen,model)
-
-    return accuracy
 
 #####################################
 # 0.01 -> do 0 ate o 5th
