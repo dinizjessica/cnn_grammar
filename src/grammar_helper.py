@@ -15,7 +15,6 @@ def createModelForNeuralNetwork(networkArchitecture, input_shape, *positional_pa
     convOrPoolLayerArray = getConvOrPoolLayerArray(networkArchitecture)
 
     for layer in convOrPoolLayerArray:
-        print(layer)
         model.add(getConvOrPoolLayer(layer, input_shape))
         if (hasBatchNormalization(layer)):
           model.add(BatchNormalization())
@@ -24,7 +23,6 @@ def createModelForNeuralNetwork(networkArchitecture, input_shape, *positional_pa
     # fully-connected - <classification>
     classLayerArray = getClassificationLayerArray(networkArchitecture)
     for classLayer in classLayerArray:
-        print(classLayerArray)
         addDropout = hasDropout(classLayer)
         model.add(getClassificationLayer(classLayer))
         if addDropout:
@@ -157,9 +155,7 @@ def getLearningOpt(learningString):
     learningRate = float(getValueFrom(learningString, 'learning-rate'))
     optimizer = getValueFrom(learningString, 'learning')
     if optimizer == 'gradient-descent':
-        print('SGD')
         return SGD(lr=learningRate)
-    print('Adam')
     return Adam(lr=learningRate, epsilon=0.1)
 
 def getValueFrom(convString, fieldName):

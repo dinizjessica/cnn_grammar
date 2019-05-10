@@ -24,8 +24,6 @@ def runNeuralNetwork(networkArchitecture, data_dir, epochs=100, batch_size=32, i
     num_classes = getNumberOfClasses(train_data_dir)
     nb_train_samples =  getQuantityOfFilesInAFolder(train_data_dir)             # dividido igualmente entre as classes
     nb_validation_samples = getQuantityOfFilesInAFolder(validation_data_dir)    # dividido igualmente entre as classes
-    # print("nb_train_samples: " + str(nb_train_samples) + "; nb_validation_samples: " + str(nb_validation_samples))
-    # print("num_classes: "+str(num_classes))
     best_weights_filepath = 'best_weights.hdf5'
     #####################################
 
@@ -46,7 +44,6 @@ def runNeuralNetwork(networkArchitecture, data_dir, epochs=100, batch_size=32, i
         target_size=(img_width, img_height),
         batch_size=batch_size,
         class_mode='binary')
-    # class_mode='categorical' ???
 
     validation_generator = test_datagen.flow_from_directory(
         validation_data_dir,
@@ -81,6 +78,7 @@ def runNeuralNetwork(networkArchitecture, data_dir, epochs=100, batch_size=32, i
         results = results + accuracy
 
     average = results/3
+    writeLog("average accuracy: " + str(average))
     return average
 
 
